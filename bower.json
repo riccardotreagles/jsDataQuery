@@ -6,6 +6,9 @@
   ],
   "description": "Query expressions translatable into Sql conditions",
   "main": "src/jsDataQuery.js",
+  "files": [
+    "src"
+  ],
   "moduleType": [
     "amd",
     "globals",
