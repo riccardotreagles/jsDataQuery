@@ -27,7 +27,7 @@ module.exports = function(config) {
     files: [
         'node_modules/jasmine-collection-matchers/index.js',
         'bower_components/lodash/lodash.js',
-        'src/jsDataQuery.js',
+        '../src/jsDataQuery.js',
         'test/spec/*.js'
     ],
 
