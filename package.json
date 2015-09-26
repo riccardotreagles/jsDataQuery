@@ -1,6 +1,6 @@
 {
   "name": "jsdataquery",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Query functions convertable into sql expressions",
   "main": "src/jsDataQuery.js",
   "scripts": {
