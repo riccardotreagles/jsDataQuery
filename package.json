@@ -1,0 +1,44 @@
+{
+  "name": "jsdataquery",
+  "version": "1.0.0",
+  "description": "Query functions convertable into sql expressions",
+  "main": "src/jsdataquery.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "dependencies": {
+    "lodash": "~3.1.0"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-contrib-yuidoc": "^0.7.0",
+    "grunt-karma": "^0.10.1",
+    "jasmine-core": "^2.2.0",
+    "jasmine-collection-matchers":"*",
+    "karma": "^0.12.31",
+    "karma-jasmine": "^0.3.5",
+    "karma-junit-reporter": "^0.2.2",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "karma-sauce-launcher": "^0.2.10",
+    "load-grunt-tasks": "^3.1.0",
+    "time-grunt": "^1.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gaelazzo/jsdataquery.git"
+  },
+  "keywords": [
+    "query",
+    "expression",
+    "javascript",
+    "sql",
+    "compiler"
+  ],
+  "author": "Gaetano Lazzo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gaelazzo/jsdataquery/issues"
+  },
+  "homepage": "https://github.com/gaelazzo/jsdataquery#readme"
+}
