@@ -1,14 +1,14 @@
 {
-  "name": "jsdataquery",
+  "name": "jsDataQuery",
   "version": "1.0.0",
-  "authors": [
-    "Gaetano Lazzo <gaetano.lazzo@gmail.com>"
-  ],
   "homepage": "https://github.com/gaelazzo/jsdataquery",
   "repository": {
     "type": "git",
     "url":"git://github.com/gaelazzo/jsdataquery.git"
   },
+  "authors": [
+    "Gaetano Lazzo <gaetano.lazzo@gmail.com>"
+  ],
   "description": "Query expressions translatable into Sql conditions",
   "main": ["src/jsDataQuery.js"],
   "files": [
