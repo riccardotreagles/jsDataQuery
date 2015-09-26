@@ -1813,7 +1813,7 @@
         else if (freeExports && freeModule) {
             // Export for Node.js or RingoJS.
             if (moduleExports) {
-                (freeModule.exports = jsDataQuery).jsDataQuery = dataQuery;
+                (freeModule.exports = dataQuery).jsDataQuery = dataQuery;
             }
             // Export for Narwhal or Rhino -require.
             else {
