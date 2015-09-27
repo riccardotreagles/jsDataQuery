@@ -1,5 +1,5 @@
 {
-  "name": "jsdataquery",
+  "name": "jsDataQuery",
   "version": "1.0.1",
   "description": "Query functions convertable into sql expressions",
   "main": "src/jsDataQuery.js",
@@ -26,7 +26,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gaelazzo/jsdataquery"
+    "url": "https://github.com/gaelazzo/jsDataQuery"
   },
   "keywords": [
     "query",
@@ -38,7 +38,7 @@
   "author": "Gaetano Lazzo",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/gaelazzo/jsdataquery/issues"
+    "url": "https://github.com/gaelazzo/jsDataQuery/issues"
   },
-  "homepage": "https://github.com/gaelazzo/jsdataquery#readme"
+  "homepage": "https://github.com/gaelazzo/jsDataQuery#readme"
 }

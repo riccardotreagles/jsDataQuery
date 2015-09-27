@@ -1,10 +1,10 @@
 {
-  "name": "jsdataquery",
+  "name": "jsDataQuery",
   "version": "1.0.0",
-  "homepage": "https://github.com/gaelazzo/jsdataquery",
+  "homepage": "https://github.com/gaelazzo/jsDataQuery",
   "repository": {
     "type": "git",
-    "url":"git://github.com/gaelazzo/jsdataquery.git"
+    "url":"git://github.com/gaelazzo/jsDataQuery.git"
   },
   "authors": [
     "Gaetano Lazzo <gaetano.lazzo@gmail.com>"
