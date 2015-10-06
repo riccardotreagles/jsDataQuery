@@ -4,6 +4,7 @@
  */
 //*jslint nomen: true*/
 /*jslint bitwise: true */
+/*globals sqlFormatter define quote joinAnd joinOr */
 ;
 'use strict';
 
@@ -113,27 +114,32 @@
 
         /**
          * constant true if it is a constant expression, false otherwise
-         * @property {boolean}
+         * @property isTrue
+         * @type boolean
          */
 
         /**
          * name of this field in the select result
-         * @property {string} fieldName
+         * @property fieldName
+         * @type string
          **/
 
         /**
          * true if the function is the true constant
-         * @property {boolean} isTrue
+         * @property isTrue
+         * @type boolean
          **/
 
         /**
          * true if the function is the false constant
-         * @property {boolean} isFalse
+         * @property isFalse
+         * @type boolean
          **/
 
         /**
          *  table to which this field has been taken in a select
-         * @property {string} tableName
+         * @property  tableName
+         * @type string
          */
 
         /**
@@ -145,7 +151,7 @@
         /**
          * Check if an object is the null or undefined constant
          * @method isNullOrUndefined
-         * @param o
+         * @param {sqlFun|undefined|null} o
          * @return {boolean} true if o is null or undefined
          */
         function isNullOrUndefined(o) {
@@ -161,7 +167,6 @@
          * @return {sqlFun}
          */
         function toSqlFun(f, toSql) {
-            var fun = f;
             var tryInvoke = f();
             if (tryInvoke !== undefined) {
                 f = constant(tryInvoke);
@@ -175,27 +180,16 @@
 
 
         /**
-         * private
-         * @param fieldName
+         * Establish the output name for an expression
+         * @method as
+         * @param {string} fieldName
+         * @return {sqlFun}
          */
         function as(fieldName) {
             this.fieldName = fieldName;
+            return this;
         }
 
-        /**
-         * private
-         * @param f
-         * @param value
-         * @returns {Function}
-         */
-        function skipUndefined(f, value) {
-            return function (r, context) {
-                if (r === undefined) {
-                    return undefined;
-                }
-                return f(r, context);
-            }
-        }
 
 
         /**
@@ -265,7 +259,7 @@
          *  12 is returned unchanged,
          *  a function is returned  unchanged
          * @method autofield
-         * @param {sqlFun} p
+         * @param {sqlFun|string} p
          * @return {sqlFun}
          */
         function autofield(p) {
@@ -328,7 +322,7 @@
          * @param expr function representing a generic expression
          * @param {object} r
          * @param {object} context
-         * @return {Object} expr evaluated in the context r
+         * @return {Object|string|null|undefined} expr evaluated in the context r
          *  undefined are returned as null constant
          */
         function calc(expr, r, context) {
@@ -627,9 +621,9 @@
         /**
          * Finds distinct values of a field
          * @method distinctVal
-         * @param arr
+         * @param {object[]} arr
          * @param fieldname
-         * @returns {object[]}
+         * @returns {object[]|undefined}
          */
         function distinctVal(arr, fieldname) {
             if (arr === undefined) {
@@ -673,7 +667,7 @@
                 return 'distinct(' + arrayToString(exprList) + ')';
             };
             var toSql = function (formatter, context) {
-                return formatter.distinct(exprList);
+                return formatter.distinct(exprList, context);
             };
             return toSqlFun(f, toSql);
         }
@@ -683,7 +677,7 @@
          * checks if expr1 is in the array list
          * @method isIn
          * @param expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param list {array} Array or function that evaluates into an array
+         * @param list {Array} Array or function that evaluates into an array
          * @returns {sqlFun}
          */
         function isIn(expr1, list) {
@@ -719,11 +713,11 @@
          * checks if expr1 is not in the array list
          * @method isNotIn
          * @param expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param list {array} Array or function that evaluates into an array
+         * @param list {Array} Array or function that evaluates into an array
          * @returns {sqlFun}
          */
         function isNotIn(expr1, list) {
-            return not(isIn(expr1, list, context));
+            return not(isIn(expr1, list));
         }
 
         function toString(o) {
@@ -739,8 +733,8 @@
         /**
          * checks if expr1 evaluates equal to expr2
          * @method eq
-         * @param expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param expr2
+         * @param {sqlFun} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun} expr2
          * @returns {sqlFun}
          */
         function eq(expr1, expr2) {
@@ -769,8 +763,8 @@
         /**
          * checks if expr1 evaluates different from expr2
          * @method ne
-         * @param expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param expr2
+         * @param {sqlFun} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun} expr2
          * @returns {sqlFun}
          */
         function ne(expr1, expr2) {
@@ -799,8 +793,8 @@
         /**
          * checks if expr1 evaluates less than from expr2
          * @method lt
-         * @param expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param expr2
+         * @param {sqlFun} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun} expr2
          * @returns {sqlFun}
          */
         function lt(expr1, expr2) {
@@ -834,8 +828,8 @@
         /**
          * checks if expr1 evaluates less than or equal to from expr2
          * @method le
-         * @param expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param expr2
+         * @param {sqlFun} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun} expr2
          * @returns {sqlFun}
          */
         function le(expr1, expr2) {
@@ -870,8 +864,8 @@
         /**
          * checks if expr1 evaluates greater than expr2
          * @method gt
-         * @param expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param expr2
+         * @param {sqlFun} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun} expr2
          * @returns {sqlFun}
          */
         function gt(expr1, expr2) {
@@ -943,7 +937,7 @@
         /**
          * checks if at least one of supplied expression evaluates to a truthy value
          * @method or
-         * @param arr {array} array or list of expression
+         * @param arr {Array} array or list of expression
          * @returns {sqlFun}
          */
         function or(arr) {
@@ -1020,8 +1014,7 @@
                 a = [].slice.call(arguments);
             }
             f = function (r, context) {
-                var i,
-                    someUndefined = false;
+                var i;
                 for (i = 0; i < a.length; i += 1) {
                     var x = calc(a[i], r, context);
                     if (x === undefined) {
@@ -1096,8 +1089,8 @@
         /**
          * checks if expr1 is null or less than or equal to expr2
          * @method isNullOrLe
-         * @param expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param expr2
+         * @param {sqlFun} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun} expr2
          * @returns {sqlFun}
          */
         function isNullOrLe(expr1, expr2) {
@@ -1109,7 +1102,7 @@
          * Evaluates the maximum value of an expression in a table. If any undefined is found, return undefined.
          * Null are skipped. If all is null return null
          * @method max
-         * @param {expression} expr1
+         * @param {sqlFun} expr1
          * @returns {sqlFun}
          */
         function max(expr1) {
@@ -1153,7 +1146,7 @@
          * Evaluates the minimum value of an expression in a table. If any undefined is found, return undefined.
          * Null are skipped. If all is null return null
          * @method min
-         * @param {expression} expr1
+         * @param {sqlFun} expr1
          * @returns {sqlFun}
          */
         function min(expr1) {
@@ -1196,7 +1189,7 @@
 
         /**
          * @method substring
-         * @param {expression} expr1
+         * @param {sqlFun} expr1
          * @param {number} start
          * @param {number} len
          * @returns {sqlFun}
@@ -1248,7 +1241,7 @@
         /**
          * Converts a generic expression into an integer
          * @method convertToInt
-         * @param {expression} expr1
+         * @param {sqlFun} expr1
          * @returns {sqlFun}
          */
         function convertToInt(expr1) {
@@ -1280,7 +1273,7 @@
         /**
          * Converts a generic expression into a string
          * @method convertToString
-         * @param {expression} expr1
+         * @param {sqlFun} expr1
          * @param {number} maxLen maximum string len
          * @returns {sqlFun}
          */
@@ -1312,7 +1305,7 @@
         /**
          * checks if all supplied expression evaluate to truthy values
          * @method and
-         * @param arr {array} array or list of expression
+         * @param arr {Array} array or list of expression
          * @return {sqlFun}
          */
         function and(arr) {
@@ -1432,6 +1425,7 @@
             f.toString = function () {
                 return 'mcmp(' + arrayToString(keys) + ',' + arrayToString(picked) + ')';
             };
+
             var toSql = function (formatter, context) {
                 var k, v;
 
@@ -1442,9 +1436,9 @@
                             k = pair[0];
                             v = pair[1];
                             if (isNullOrUndefined(v)) {
-                                return formatter.isNull(field(k, alias));
+                                return formatter.isNull(field(k, alias), context);
                             }
-                            return formatter.eq(field(k, alias), v);
+                            return formatter.eq(field(k, alias), v, context);
                         }
                     )
                 );
@@ -1495,8 +1489,6 @@
             var expr = autofield(expr1),
                 f;
             f = function (r, context) {
-                var i,
-                    sub = null;
                 if (r === undefined) {
                     return undefined;
                 }
@@ -1538,8 +1530,6 @@
             var expr = autofield(expr1),
                 f;
             f = function (r, context) {
-                var i,
-                    sub = null;
                 if (r === undefined) {
                     return undefined;
                 }
@@ -1650,8 +1640,8 @@
         /**
          * Evaluates the sum of an array of element given at run time
          * @method sum
-         * @param expr1
-         * @returns {f}
+         * @param {sqlFun} expr1
+         * @returns {sqlFun}
          */
         function sum(expr1) {
             var expr = autofield(expr1),
@@ -1698,7 +1688,7 @@
          * returns a functions that evaluates the multiply of a list or array of values
          * If some operand is 0, returns the always 0 function
          * @method mul
-         * @param values
+         * @param {sqlFun[]} values
          * @return {sqlFun}
          */
         function mul(values) {
