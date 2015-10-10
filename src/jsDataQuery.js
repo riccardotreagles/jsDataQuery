@@ -1,10 +1,7 @@
-/**
- * Created by Administrator on 26/09/2015.
- * Thanks to lodash
- */
-//*jslint nomen: true*/
+/*globals sqlFormatter,define,quote,global */
+/*jslint nomen: true*/
 /*jslint bitwise: true */
-/*globals sqlFormatter define quote joinAnd joinOr */
+
 ;
 'use strict';
 
@@ -98,6 +95,7 @@
         /**
          * Function with ability to be converted to sql. When invoked gives a result depending on the arguments.
          * @class sqlFun
+         * @type sqlFun
          */
 
 
@@ -193,9 +191,9 @@
 
 
         /**
-         * returns  a function that given an environment will give the input functions applied to that.
+         * Transforms a generic function into a sqlFun.
          * @method context
-         * @param environmentFunction
+         * @param environmentFunction A function to apply to a generic environment
          * @return {sqlFun}
          * @example if environment = {a:1, b:2} and environmentFunction = function (env){return env.a}
          *   context(environmentFunction) applied to environment will return 1
@@ -937,7 +935,7 @@
         /**
          * checks if at least one of supplied expression evaluates to a truthy value
          * @method or
-         * @param arr {Array} array or list of expression
+         * @param {sqlFun[]} arr  array or list of expression
          * @returns {sqlFun}
          */
         function or(arr) {
