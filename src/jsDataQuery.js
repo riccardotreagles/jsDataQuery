@@ -69,7 +69,7 @@
             root = freeGlobal;
         }
 
-        /** Detect the popular CommonJS extension `module.exports`. Tthanks lodash */
+        /** Detect the popular CommonJS extension `module.exports`. Thanks lodash */
         var moduleExports = freeModule && freeModule.exports === freeExports && freeExports;
 
 
@@ -1448,12 +1448,13 @@
          * Compares a set of keys of an object with an array of values or with fields of another object
          * @method mcmpLike
          * @param {object}example
+         * @param {string} [alias]
          * @return {sqlFun} f(r) = true if  for each non empty field of r:
          *  case field is a string containing a %: r[field] LIKE example[field]
          *  otherwise: r[field] = example[field]
          */
 
-        function mcmpLike(example) {
+        function mcmpLike(example, alias) {
             if (example === null || example === undefined) {
                 return constant(true);
             }
@@ -1466,10 +1467,10 @@
                     return;
                 }
                 if (_.isString(myValues[k])) {
-                    exprArr.push(like(k, '%' + myValues[k] + '%'));
+                    exprArr.push(like(field(k,alias), '%' + myValues[k] + '%'));
 
                 } else {
-                    exprArr.push(eq(k, myValues[k]));
+                    exprArr.push(eq(field(k,alias), myValues[k]));
                 }
             });
             return and(exprArr)
