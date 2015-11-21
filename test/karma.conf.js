@@ -27,7 +27,6 @@ module.exports = function(config) {
     files: [
         'node_modules/jasmine-collection-matchers/index.js',
         'bower_components/lodash/lodash.js',
-        'src/sqlServerFormatter.js',
         'src/jsDataQuery.js',
         'test/spec/*.js'
     ],
@@ -37,7 +36,7 @@ module.exports = function(config) {
     ],
 
     // web server port
-    port: 8080,
+    port: 8081,
 
     // Start these browsers, currently available:
     // - Chrome

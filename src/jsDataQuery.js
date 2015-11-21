@@ -1467,7 +1467,7 @@
                     return;
                 }
                 if (_.isString(myValues[k])) {
-                    exprArr.push(like(field(k,alias), '%' + myValues[k] + '%'));
+                    exprArr.push(like(field(k,alias),myValues[k]));
 
                 } else {
                     exprArr.push(eq(field(k,alias), myValues[k]));
