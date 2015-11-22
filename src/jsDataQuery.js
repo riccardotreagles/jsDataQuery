@@ -1450,8 +1450,8 @@
          * @param {object}example
          * @param {string} [alias]
          * @return {sqlFun} f(r) = true if  for each non empty field of r:
-         *  case field is a string containing a %: r[field] LIKE example[field]
-         *  otherwise: r[field] = example[field]
+         *  case field is a string containing a %:  field LIKE example[field]
+         *  otherwise: field = example[field]
          */
         function mcmpLike(example, alias) {
             if (example === null || example === undefined) {
@@ -1479,11 +1479,11 @@
 
         /**
              * Compares a set of keys of an object with an array of values or with fields of another object
-             * @method mcmpLike
+             * @method mcmpEq
              * @param {object}example
              * @param {string} [alias]
              * @return {sqlFun} f(r) = true if  for each non empty field of r:
-             *  case field is a string containing a %: r[field] LIKE example[field]
+             *  case field is null :    field is null
              *  otherwise: r[field] = example[field]
              */
         function mcmpEq(example, alias) {
