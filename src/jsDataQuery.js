@@ -5,7 +5,7 @@
 ;
 'use strict';
 
-(function (_) {
+(function(_) {
         /** Used as a safe reference for `undefined` in pre-ES5 environments. (thanks lodash)*/
         var undefined;
 
@@ -16,12 +16,12 @@
          * @param str the string to be escaped
          * @return {String} escaped string
          */
-        var myRegExpEscape = function (str) {
+        var myRegExpEscape = function(str) {
             return str.replace(/([.*+?\^=!:${}()|\[\]\/\\])/g, '\\$1'); // str.replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
         };
 
         if (!Function.prototype.bind) {
-            Function.prototype.bind = function (oThis) {
+            Function.prototype.bind = function(oThis) {
                 if (typeof this !== "function") {
                     // closest thing possible to the ECMAScript 5 internal IsCallable function
                     throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
@@ -29,9 +29,9 @@
 
                 var aArgs = Array.prototype.slice.call(arguments, 1),
                     fToBind = this,
-                    FNOP = function () {
+                    FNOP = function() {
                     },
-                    fBound = function () {
+                    fBound = function() {
                         return fToBind.apply(this instanceof FNOP && oThis ? this : oThis,
                             aArgs.concat(Array.prototype.slice.call(arguments)));
                     };
@@ -107,7 +107,6 @@
          * @param {object} context  is the context into which the expression have to be evaluated
          * @return {string} //the sql representation of the expression
          */
-
 
 
         /**
@@ -189,7 +188,6 @@
         }
 
 
-
         /**
          * Transforms a generic function into a sqlFun.
          * @method context
@@ -199,18 +197,18 @@
          *   context(environmentFunction) applied to environment will return 1
          */
         function context(environmentFunction) {
-            var f = function (environment) {
+            var f = function(environment) {
                 if (environment === undefined) {
                     return undefined;
                 }
                 return environmentFunction(environment);
             };
-            f.toSql = function (formatter, environment) {
+            f.toSql = function(formatter, environment) {
                 return formatter.quote(environmentFunction(environment));
             };
             f.as = as;
             f.constant = false;
-            f.toString = function () {
+            f.toString = function() {
                 return 'context(' + environmentFunction.toString() + ')';
             };
             return f;
@@ -229,8 +227,8 @@
          *
          */
         function field(fieldName, tableName) {
-            var f = function (r) {
-                if (r === undefined) {
+            var f = function(r) {
+                if (isNullOrUndefined(r)) {
                     return undefined;
                 }
                 if (r.hasOwnProperty(fieldName)) {
@@ -240,10 +238,10 @@
             };
             f.tableName = tableName;
             f.fieldName = fieldName;
-            f.toString = function () {
-                return fieldName
+            f.toString = function() {
+                return fieldName;
             };
-            var toSql = function (formatter) {
+            var toSql = function(formatter) {
                 return formatter.field(fieldName, tableName);
             };
             return toSqlFun(f, toSql);
@@ -271,25 +269,25 @@
         /**
          * Defines a constant function. The toSql method invokes the formatter.quote function
          * @method constant
-         * @param {object} K is a literal
+         * @param {object} value is a literal
          * @return {sqlFun} f such that f()= k, f.toSql()= formatter.quote(k)
          */
-        function constant(K) {
-            var k = K;
+        function constant(value) {
+            var k = value;
             if (k === undefined) {
                 k = null;
             }
-            var f = function () {
+            var f = function() {
                 return k;
             };
-            f.toString = function () {
-                return 'constant(' + k.toString() + ')'
+            f.toString = function() {
+                return 'constant(' + k.toString() + ')';
             };
             f.constant = true;
             f.as = as;
             if (k === true) {
                 f.isTrue = true;
-                f.toSql = function (formatter) {
+                f.toSql = function(formatter) {
                     return formatter.eq(1, 1);
                 };
                 return f;
@@ -297,7 +295,7 @@
 
             if (k === false) {
                 f.isFalse = true;
-                f.toSql = function (formatter) {
+                f.toSql = function(formatter) {
                     return formatter.eq(1, 0);
                 };
                 return f;
@@ -307,7 +305,7 @@
              The .toSql method of a constant calls directly the quote method of the formatter. HERE is where the
              tree top-down scan ends.
              */
-            f.toSql = function (formatter) {
+            f.toSql = function(formatter) {
                 return formatter.quote(k);
             };
             return f;
@@ -336,7 +334,7 @@
             //if expr is an array, a new array is returned where each element is the evaluation of the
             // corresponding element in the original array
             if (_.isArray(expr)) {
-                return _.map(expr, function (el) {
+                return _.map(expr, function(el) {
                     return calc(el, r, context);
                 });
             }
@@ -353,7 +351,7 @@
          */
         function isNull(expr1) {
             var expr = autofield(expr1);
-            var f = function (r, context) {
+            var f = function(r, context) {
                 if (isNullOrUndefined(expr)) {
                     return true;
                 }
@@ -363,7 +361,7 @@
                 }
                 return (res === null);
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.isNull(expr, context);
             };
             return toSqlFun(f, toSql);
@@ -377,17 +375,17 @@
          */
         function minus(expr1) {
             var expr = autofield(expr1);
-            var f = function (r, context) {
+            var f = function(r, context) {
                 var v1 = calc(expr, r, context);
                 if (isNullOrUndefined(v1)) {
                     return v1;
                 }
                 return -v1;
             };
-            f.toString = function () {
+            f.toString = function() {
                 return '-' + expr.toString();
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.minus(expr, context);
             };
             return toSqlFun(f, toSql);
@@ -401,17 +399,17 @@
          */
         function not(expr1) {
             var expr = autofield(expr1);
-            var f = function (r, context) {
+            var f = function(r, context) {
                 var v1 = calc(expr, r, context);
                 if (isNullOrUndefined(v1)) {
                     return v1;
                 }
                 return !v1;
             };
-            f.toString = function () {
+            f.toString = function() {
                 return 'not(' + expr.toString() + ')';
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.not(expr, context);
             };
             return toSqlFun(f, toSql);
@@ -426,7 +424,7 @@
          */
         function bitSet(expression, nbit) {
             var expr = autofield(expression),
-                f = function (r, context) {
+                f = function(r, context) {
                     var v1 = calc(expr, r, context), v2;
                     if (v1 === undefined) {
                         return undefined;
@@ -443,10 +441,10 @@
                     }
                     return (v1 & (1 << v2)) !== 0;
                 };
-            f.toString = function () {
+            f.toString = function() {
                 return 'bitSet(' + expr.toString() + ',' + nbit.toString() + ')';
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.bitSet(expr, nbit, context);
             };
             return toSqlFun(f, toSql);
@@ -461,7 +459,7 @@
          */
         function bitClear(expression, nbit) {
             var expr = autofield(expression),
-                f = function (r, context) {
+                f = function(r, context) {
                     var v1 = calc(expr, r, context), v2;
                     if (v1 === undefined) {
                         return undefined;
@@ -478,10 +476,10 @@
                     }
                     return (v1 & (1 << v2)) === 0;
                 };
-            f.toString = function () {
+            f.toString = function() {
                 return 'bitClear(' + expr.toString() + ',' + nbit.toString() + ')';
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.bitClear(expr, nbit, context);
             };
             return toSqlFun(f, toSql);
@@ -499,36 +497,36 @@
          */
         function testMask(expr1, mask, val) {
             var expr = autofield(expr1),
-                f = function (r, context) {
+                f = function(r, context) {
                     var v1 = calc(expr, r, context), v2, v3;
-                    if (v1 == undefined) {
+                    if (v1 === undefined) {
                         return undefined;
                     }
-                    if (v1 == null) {
+                    if (v1 === null) {
                         return false;
                     }
                     v2 = calc(mask, r, context);
-                    if (v2 == undefined) {
+                    if (v2 === undefined) {
                         return undefined;
                     }
-                    if (v2 == null) {
+                    if (v2 === null) {
                         return false;
                     }
                     v3 = calc(val, r, context);
-                    if (v3 == undefined) {
+                    if (v3 === undefined) {
                         return undefined;
                     }
-                    if (v3 == null) {
+                    if (v3 === null) {
                         return false;
                     }
                     return ((v1 & v2) === (v3 & v2));
                 };
 
-            f.toString = function () {
+            f.toString = function() {
                 return 'testMask(' + expr.toString() + ',' + mask.toString() + ',' + val.toString() + ')';
             };
 
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.testMask(expr, mask, val, context);
             };
             return toSqlFun(f, toSql);
@@ -545,7 +543,7 @@
          */
         function between(expr1, min, max) {
             var expr = autofield(expr1),
-                f = function (r, context) {
+                f = function(r, context) {
                     var v1 = calc(expr, r, context), v2, v3;
                     if (v1 === undefined) {
                         return undefined;
@@ -569,10 +567,10 @@
                     }
                     return (v1 >= v2) && (v1 <= v3);
                 };
-            f.toString = function () {
+            f.toString = function() {
                 return 'between(' + expr.toString() + ',' + min.toString() + ',' + max.toString() + ')';
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.between(expr, min, max, context);
             };
             return toSqlFun(f, toSql);
@@ -589,7 +587,7 @@
          */
         function like(expr1, mask) {
             var expr = autofield(expr1),
-                f = function (r, context) {
+                f = function(r, context) {
                     var v1 = calc(expr, r, context), v2, likeExpr;
                     if (v1 === undefined) {
                         return undefined;
@@ -607,10 +605,10 @@
                     likeExpr = myRegExpEscape(v2);
                     return (new RegExp(likeExpr.replace(new RegExp('%', 'g'), ".*").replace(new RegExp('_', 'g'), ".")).exec(v1) !== null);
                 };
-            f.toString = function () {
+            f.toString = function() {
                 return 'like(' + expr.toString() + ',' + mask.toString() + ')';
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.like(expr, mask, context);
             };
             return toSqlFun(f, toSql);
@@ -640,13 +638,13 @@
          * @returns {sqlFun}
          */
         function distinct(exprList) {
-            var f = function (arr, context) {
+            var f = function(arr, context) {
                 if (arr === undefined) {
                     return undefined;
                 }
                 var someUndefined = false,
-                    res = _.map(arr, function (a) {
-                        return _.reduce(exprList, function (accumulator, expr) {
+                    res = _.map(arr, function(a) {
+                        return _.reduce(exprList, function(accumulator, expr) {
                             var o = calc(expr, a, context);
                             if (o === undefined) {
                                 someUndefined = true;
@@ -661,10 +659,10 @@
                 }
                 return _.uniq(res);
             };
-            f.toString = function () {
+            f.toString = function() {
                 return 'distinct(' + arrayToString(exprList) + ')';
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.distinct(exprList, context);
             };
             return toSqlFun(f, toSql);
@@ -680,7 +678,7 @@
          */
         function isIn(expr1, list) {
             var expr = autofield(expr1),
-                f = function (r, context) {
+                f = function(r, context) {
                     var v = calc(expr, r, context), l;
                     if (v === undefined) {
                         return undefined;
@@ -698,10 +696,10 @@
                     }
                     return (_.indexOf(l, v) >= 0);
                 };
-            f.toString = function () {
+            f.toString = function() {
                 return 'isIn(' + expr.toString() + ',' + arrayToString(list) + ')';
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.isIn(expr, list, context);
             };
             return toSqlFun(f, toSql);
@@ -737,7 +735,7 @@
          */
         function eq(expr1, expr2) {
             var expr = autofield(expr1),
-                f = function (r, context) {
+                f = function(r, context) {
                     var v1 = calc(expr, r, context), v2;
                     if (v1 === undefined) {
                         return undefined;
@@ -749,10 +747,10 @@
                     return v1 === v2;
                 };
 
-            f.toString = function () {
+            f.toString = function() {
                 return 'eq(' + toString(expr) + ',' + toString(expr2) + ')';
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.eq(expr, expr2, context);
             };
             return toSqlFun(f, toSql);
@@ -767,7 +765,7 @@
          */
         function ne(expr1, expr2) {
             var expr = autofield(expr1),
-                f = function (r, context) {
+                f = function(r, context) {
                     var v1 = calc(expr, r, context), v2;
                     if (v1 === undefined) {
                         return undefined;
@@ -778,10 +776,10 @@
                     }
                     return v1 !== v2;
                 };
-            f.toString = function () {
+            f.toString = function() {
                 return 'ne(' + expr.toString() + ',' + expr2.toString() + ')';
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.ne(expr, expr2, context);
             };
             return toSqlFun(f, toSql);
@@ -797,7 +795,7 @@
          */
         function lt(expr1, expr2) {
             var expr = autofield(expr1),
-                f = function (r, context) {
+                f = function(r, context) {
                     var v1 = calc(expr, r, context), v2;
                     if (v1 === undefined) {
                         return undefined;
@@ -814,10 +812,10 @@
                     }
                     return v1 < v2;
                 };
-            f.toString = function () {
+            f.toString = function() {
                 return 'lt(' + expr.toString() + ',' + expr2.toString() + ')';
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.lt(expr, expr2, context);
             };
             return toSqlFun(f, toSql);
@@ -832,7 +830,7 @@
          */
         function le(expr1, expr2) {
             var expr = autofield(expr1),
-                f = function (r, context) {
+                f = function(r, context) {
                     var v1 = calc(expr, r, context), v2;
                     if (v1 === undefined) {
                         return undefined;
@@ -850,10 +848,10 @@
                     }
                     return v1 <= v2;
                 };
-            f.toString = function () {
+            f.toString = function() {
                 return 'le(' + expr.toString() + ',' + expr2.toString() + ')';
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.le(expr, expr2, context);
             };
             return toSqlFun(f, toSql);
@@ -868,7 +866,7 @@
          */
         function gt(expr1, expr2) {
             var expr = autofield(expr1),
-                f = function (r, context) {
+                f = function(r, context) {
                     var v1 = calc(expr, r, context), v2;
                     if (v1 === undefined) {
                         return undefined;
@@ -886,10 +884,10 @@
 
                     return v1 > v2;
                 };
-            f.toString = function () {
+            f.toString = function() {
                 return 'gt(' + expr.toString() + ',' + expr2.toString() + ')';
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.gt(expr, expr2, context);
             };
             return toSqlFun(f, toSql);
@@ -904,7 +902,7 @@
          */
         function ge(expr1, expr2) {
             var expr = autofield(expr1),
-                f = function (r, context) {
+                f = function(r, context) {
                     var v1 = calc(expr, r, context), v2;
                     if (v1 === undefined) {
                         return undefined;
@@ -923,10 +921,10 @@
                     return v1 >= v2;
                 };
 
-            f.toString = function () {
+            f.toString = function() {
                 return 'ge(' + toString(expr) + ',' + toString(expr2) + ')';
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.ge(expr, expr2, context);
             };
             return toSqlFun(f, toSql);
@@ -945,7 +943,7 @@
             if (!_.isArray(a)) {
                 a = [].slice.call(arguments);
             }
-            var optimizedArgs = _.filter(a, function (el) {
+            var optimizedArgs = _.filter(a, function(el) {
                 if (el === undefined) {
                     return false;
                 }
@@ -972,7 +970,7 @@
                 return constant(false);
             }
 
-            f = function (r, context) {
+            f = function(r, context) {
                 var i,
                     someUndefined = false;
                 for (i = 0; i < optimizedArgs.length; i += 1) {
@@ -989,11 +987,11 @@
                 }
                 return false;
             };
-            f.toString = function () {
+            f.toString = function() {
                 return 'or(' + arrayToString(a) + ')';
             };
-            var toSql = function (formatter, context) {
-                return formatter.joinOr(_.map(optimizedArgs, function (v) {
+            var toSql = function(formatter, context) {
+                return formatter.joinOr(_.map(optimizedArgs, function(v) {
                     return formatter.toSql(v, context);
                 }));
             };
@@ -1011,7 +1009,7 @@
             if (!_.isArray(a)) {
                 a = [].slice.call(arguments);
             }
-            f = function (r, context) {
+            f = function(r, context) {
                 var i;
                 for (i = 0; i < a.length; i += 1) {
                     var x = calc(a[i], r, context);
@@ -1024,11 +1022,11 @@
                 }
                 return null;
             };
-            f.toString = function () {
+            f.toString = function() {
                 return 'coalesce(' + arrayToString(a) + ')';
             };
-            var toSql = function (formatter, context) {
-                return formatter.coalesce(_.map(a, function (v) {
+            var toSql = function(formatter, context) {
+                return formatter.coalesce(_.map(a, function(v) {
                     return formatter.toSql(v, context);
                 }));
             };
@@ -1105,12 +1103,12 @@
          */
         function max(expr1) {
             var expr = autofield(expr1),
-                f = function (arr, context) {
+                f = function(arr, context) {
                     if (arr === undefined) {
                         return undefined;
                     }
                     var m = null;
-                    _.forEach(arr, function (el) {
+                    _.forEach(arr, function(el) {
                         var val = calc(expr, el, context);
                         if (val === undefined) {
                             m = undefined; //if any undefined is found, return undefined
@@ -1118,23 +1116,24 @@
                         }
                         if (m === null) {
                             m = val;
-                            return;
+                            return undefined;
                         }
                         if (val === null) {
-                            return;
+                            return undefined;
                         }
                         if (val > m) {
                             m = val;
                         }
+                        return undefined;
                     });
                     return m;
                 };
-            f.toString = function () {
+            f.toString = function() {
                 return 'max(' + expr.toString() + ')';
             };
 
             f.grouping = true;
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.max(expr, context);
             };
             return toSqlFun(f, toSql);
@@ -1149,12 +1148,12 @@
          */
         function min(expr1) {
             var expr = autofield(expr1),
-                f = function (arr, context) {
+                f = function(arr, context) {
                     if (arr === undefined) {
                         return undefined;
                     }
                     var m = null;
-                    _.forEach(arr, function (el) {
+                    _.forEach(arr, function(el) {
                         var val = calc(expr, el, context);
                         if (val === undefined) {
                             m = undefined; //if any undefined is found, return undefined
@@ -1162,23 +1161,24 @@
                         }
                         if (m === null) {
                             m = val;
-                            return;
+                            return undefined;
                         }
                         if (val === null) {
-                            return;
+                            return undefined;
                         }
                         if (val < m) {
                             m = val;
                         }
+                        return undefined;
                     });
                     return m;
                 };
-            f.toString = function () {
+            f.toString = function() {
                 return 'min(' + expr.toString() + ')';
             };
 
             f.grouping = true;
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.min(expr, context);
             };
             return toSqlFun(f, toSql);
@@ -1194,7 +1194,7 @@
          */
         function substring(expr1, start, len) {
             var expr = autofield(expr1),
-                f = function (r, context) {
+                f = function(r, context) {
                     if (r === undefined) {
                         return undefined;
                     }
@@ -1226,11 +1226,11 @@
                     }
                     return vExpr.substr(vStart, vLen);
                 };
-            f.toString = function () {
+            f.toString = function() {
                 return 'substring(' + toString(expr) + ',' + toString(start) + ',' + toString(len) + ')';
             };
 
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.substring(expr, start, len, context);
             };
             return toSqlFun(f, toSql);
@@ -1245,7 +1245,7 @@
         function convertToInt(expr1) {
 
             var expr = autofield(expr1),
-                f = function (r, context) {
+                f = function(r, context) {
                     if (r === undefined) {
                         return undefined;
                     }
@@ -1258,11 +1258,11 @@
                     }
                     return parseInt(vExpr, 10);
                 };
-            f.toString = function () {
+            f.toString = function() {
                 return 'convertToInt(' + expr.toString() + ')';
             };
 
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.convertToInt(expr, context);
             };
             return toSqlFun(f, toSql);
@@ -1277,7 +1277,7 @@
          */
         function convertToString(expr1, maxLen) {
             var expr = autofield(expr1),
-                f = function (r, context) {
+                f = function(r, context) {
                     if (r === undefined) {
                         return undefined;
                     }
@@ -1290,11 +1290,11 @@
                     }
                     return vExpr.toString().substr(0, maxLen);
                 };
-            f.toString = function () {
+            f.toString = function() {
                 return 'convertToString(' + expr.toString() + ',' + maxLen.toString() + ')';
             };
 
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.convertToString(expr, maxLen, context);
             };
             return toSqlFun(f, toSql);
@@ -1313,7 +1313,7 @@
             if (!_.isArray(a)) {
                 a = [].slice.call(arguments);
             }
-            var optimizedArgs = _.filter(a, function (el) {
+            var optimizedArgs = _.filter(a, function(el) {
                 if (el === undefined) {
                     return false;
                 }
@@ -1337,7 +1337,7 @@
                 return constant(true);
             }
 
-            f = function (r, context) {
+            f = function(r, context) {
                 var i;
                 var someUndefined = false;
                 for (i = 0; i < optimizedArgs.length; i += 1) {
@@ -1354,11 +1354,11 @@
                 }
                 return true;
             };
-            f.toString = function () {
+            f.toString = function() {
                 return 'and(' + arrayToString(a) + ')';
             };
-            var toSql = function (formatter, context) {
-                return formatter.joinAnd(_.map(optimizedArgs, function (v) {
+            var toSql = function(formatter, context) {
+                return formatter.joinAnd(_.map(optimizedArgs, function(v) {
                     return formatter.toSql(v, context);
                 }));
             };
@@ -1388,7 +1388,7 @@
             if (_.isArray(values)) {
                 picked = values; //_.map(values, function(v) {return formatter.toSql(v, context);});
             } else {
-                picked = _.map(keys, function (k) {
+                picked = _.map(keys, function(k) {
                     return values[k];
                 });
             }
@@ -1398,7 +1398,7 @@
             }
 
 
-            var f = function (r, context) {
+            var f = function(r, context) {
                 if (r === undefined) {
                     return undefined;
                 }
@@ -1420,17 +1420,17 @@
                 }
                 return true;
             };
-            f.toString = function () {
+            f.toString = function() {
                 return 'mcmp(' + arrayToString(keys) + ',' + arrayToString(picked) + ')';
             };
 
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 var k, v;
 
                 return formatter.joinAnd(
                     _.map(
                         _.zip(keys, picked),
-                        function (pair) {
+                        function(pair) {
                             k = pair[0];
                             v = pair[1];
                             if (isNullOrUndefined(v)) {
@@ -1453,7 +1453,6 @@
          *  case field is a string containing a %: r[field] LIKE example[field]
          *  otherwise: r[field] = example[field]
          */
-
         function mcmpLike(example, alias) {
             if (example === null || example === undefined) {
                 return constant(true);
@@ -1462,20 +1461,58 @@
             var exprArr = [],
                 myValues = _.clone(example);
 
-            _.forEach(_.keys(example), function (k) {
+            _.forEach(_.keys(example), function(k) {
                 if (myValues[k] === undefined || myValues[k] === '' || myValues[k] === null) {
                     return;
                 }
                 if (_.isString(myValues[k])) {
-                    exprArr.push(like(field(k,alias),myValues[k]));
+                    exprArr.push(like(field(k, alias), myValues[k]));
 
                 } else {
-                    exprArr.push(eq(field(k,alias), myValues[k]));
+                    exprArr.push(eq(field(k, alias), myValues[k]));
                 }
             });
-            return and(exprArr)
+            return and(exprArr);
 
         }
+
+
+        /**
+             * Compares a set of keys of an object with an array of values or with fields of another object
+             * @method mcmpLike
+             * @param {object}example
+             * @param {string} [alias]
+             * @return {sqlFun} f(r) = true if  for each non empty field of r:
+             *  case field is a string containing a %: r[field] LIKE example[field]
+             *  otherwise: r[field] = example[field]
+             */
+        function mcmpEq(example, alias) {
+            if (example === null || example === undefined) {
+                return constant(true);
+            }
+
+            var exprArr = [],
+                myValues = _.clone(example);
+
+            _.forEach(_.keys(example), function(k) {
+                if (myValues[k] === undefined) {
+                    return;
+                }
+                if (myValues[k] === '' || myValues[k] === null) {
+                    exprArr.push(isNull(field(k, alias)));
+                    return;
+                }
+                if (_.isString(myValues[k])) {
+                    exprArr.push(like(field(k, alias), myValues[k]));
+
+                } else {
+                    exprArr.push(eq(field(k, alias), myValues[k]));
+                }
+            });
+            return and(exprArr);
+
+        }
+
 
         /**
          * returns a functions that does a subtraction
@@ -1487,7 +1524,7 @@
         function sub(expr1, expr2) {
             var expr = autofield(expr1),
                 f;
-            f = function (r, context) {
+            f = function(r, context) {
                 if (r === undefined) {
                     return undefined;
                 }
@@ -1508,10 +1545,10 @@
                 }
                 return x - y;
             };
-            f.toString = function () {
-                return expr.toString() + '-' + expr2.toString()
+            f.toString = function() {
+                return expr.toString() + '-' + expr2.toString();
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.sub(expr, expr2, context);
             };
             return toSqlFun(f, toSql);
@@ -1528,7 +1565,7 @@
         function div(expr1, expr2) {
             var expr = autofield(expr1),
                 f;
-            f = function (r, context) {
+            f = function(r, context) {
                 if (r === undefined) {
                     return undefined;
                 }
@@ -1548,10 +1585,10 @@
                 }
                 return x / y;
             };
-            f.toString = function () {
+            f.toString = function() {
                 return 'div(' + expr.toString() + ',' + expr2.toString() + ')';
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.div(expr, expr2, context);
             };
             return toSqlFun(f, toSql);
@@ -1569,7 +1606,7 @@
             if (!_.isArray(a)) {
                 a = [].slice.call(arguments);
             }
-            f = function (r, context) {
+            f = function(r, context) {
                 var i,
                     sum = null;
                 for (i = 0; i < a.length; i += 1) {
@@ -1587,10 +1624,10 @@
                 }
                 return sum;
             };
-            f.toString = function () {
+            f.toString = function() {
                 return 'add(' + arrayToString(a) + ')';
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.add(a, context);
             };
             return toSqlFun(f, toSql);
@@ -1608,7 +1645,7 @@
             if (!_.isArray(a)) {
                 a = [].slice.call(arguments);
             }
-            f = function (r, context) {
+            f = function(r, context) {
                 var i,
                     seq = null;
                 for (i = 0; i < a.length; i += 1) {
@@ -1626,10 +1663,10 @@
                 }
                 return seq;
             };
-            f.toString = function () {
+            f.toString = function() {
                 return 'concat(' + arrayToString(values) + ')';
             };
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.concat(a, context);
             };
             return toSqlFun(f, toSql);
@@ -1644,9 +1681,12 @@
          */
         function sum(expr1) {
             var expr = autofield(expr1),
-                f = function (values, context) {
+                f = function(values, context) {
                     if (values === undefined) {
                         return undefined;
+                    }
+                    if (values === null) {
+                        return null;
                     }
                     var a = values;
                     if (!_.isArray(a)) {
@@ -1670,12 +1710,12 @@
                     }
                     return sum;
                 };
-            f.toString = function () {
+            f.toString = function() {
                 return 'sum(' + expr.toString() + ')';
             };
 
             f.grouping = true;
-            var toSql = function (formatter, context) {
+            var toSql = function(formatter, context) {
                 return formatter.sum(expr, context);
             };
 
@@ -1696,7 +1736,7 @@
             if (!_.isArray(a)) {
                 a = [].slice.call(arguments);
             }
-            f = function (r, context) {
+            f = function(r, context) {
                 var i,
                     prod = null,
                     someUndefined = false;
@@ -1720,11 +1760,11 @@
                 return prod;
             };
 
-            f.toString = function () {
+            f.toString = function() {
                 return 'mul(' + arrayToString(values) + ')';
             };
-            var toSql = function (formatter, context) {
-                return formatter.add(_.map(a, function (v) {
+            var toSql = function(formatter, context) {
+                return formatter.add(_.map(a, function(v) {
                     return formatter.toSql(v, context);
                 }));
             };
@@ -1732,9 +1772,9 @@
         }
 
         function arrayToString(arr) {
-            return '[' + _.map(arr, function (value) {
-                    return toString(value);
-                }).join(',') + ']';
+            return '[' + _.map(arr, function(value) {
+                return toString(value);
+            }).join(',') + ']';
         }
 
         var dataQuery = {
@@ -1748,6 +1788,7 @@
             mul: mul,
             mcmp: mcmp,
             mcmpLike: mcmpLike,
+            mcmpEq: mcmpEq,
             isNull: isNull,
             constant: constant,
             and: and,
@@ -1794,7 +1835,7 @@
 
             // Define as an anonymous module so, through path mapping, it can be
             // referenced as the "underscore" module.
-            define(function () {
+            define(function() {
                 return dataQuery;
             });
         }
@@ -1808,8 +1849,7 @@
             else {
                 freeExports.jsDataQuery = dataQuery;
             }
-        }
-        else {
+        } else {
             // Export for a browser or Rhino.
             root.jsDataQuery = dataQuery;
         }
