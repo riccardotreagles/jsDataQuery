@@ -155,6 +155,7 @@
             return _.isUndefined(o) || _.isNull(o);
         }
 
+
         /**
          * @private
          * Adds some useful methods and properties to a function in order to transform it into a sqlFun
@@ -352,9 +353,9 @@
         function isNull(expr1) {
             var expr = autofield(expr1);
             var f = function(r, context) {
-                if (isNullOrUndefined(expr)) {
-                    return true;
-                }
+                if (expr === undefined) return undefined;
+                if (expr === null) return true;
+
                 var res = calc(expr, r, context);
                 if (res === undefined) {
                     return undefined;
@@ -366,6 +367,24 @@
             };
             return toSqlFun(f, toSql);
         }
+
+        function isNotNull(expr1) {
+            var expr = autofield(expr1);
+            var f = function(r, context) {
+                if (expr === undefined) return undefined;
+                if (expr === null) return false;
+                var res = calc(expr, r, context);
+                if (res === undefined) {
+                    return undefined;
+                }
+                return (res !== null);
+            };
+            var toSql = function(formatter, context) {
+                return formatter.isNotNull(expr, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
 
 
         /**
@@ -1790,6 +1809,7 @@
             mcmpLike: mcmpLike,
             mcmpEq: mcmpEq,
             isNull: isNull,
+            isNotNull: isNotNull,
             constant: constant,
             and: and,
             or: or,
