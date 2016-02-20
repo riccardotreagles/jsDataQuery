@@ -95,55 +95,67 @@
         /**
          * Function with ability to be converted to sql. When invoked gives a result depending on the arguments.
          * @class sqlFun
-         * @type sqlFun
-         */
-
-
-        /**
-         * Converts a SqlFun into a string
-         * @method toSql
          * @public
-         * @param {sqlFormatter} formatter  used to obtain details about making the expression,
-         *      see sqlFormatter for an example
-         * @param {object} context  is the context into which the expression have to be evaluated
-         * @return {string} //the sql representation of the expression
+         * @constructor
          */
+        function sqlFun(){
+            /**
+             * constant true if it is a constant expression, false otherwise
+             * @property constant
+             * @public
+             * @type boolean
+             */
+            this.constant = false;
+
+            /**
+             * name of this field in the select result
+             * @property fieldName
+             * @public
+             * @type string
+             **/
+            this.fieldName= 'dummy';
+
+            /**
+             * Converts a SqlFun into a string
+             * @method toSql
+             * @public
+             * @param {sqlFormatter} formatter  used to obtain details about making the expression,
+             *      see sqlFormatter for an example
+             * @param {object} context  is the context into which the expression have to be evaluated
+             * @return {string} //the sql representation of the expression
+             */
+            this.toSql= function(){
+
+            }
+
+            /**
+             * true if the function is the true constant
+             * @property isTrue
+             * @public
+             * @type boolean
+             **/
+            this.isTrue = false;
+
+            /**
+             * true if the function is the false constant
+             * @property isFalse
+             * @public
+             * @type boolean
+             **/
+            this.isFalse= false;
+
+            /**
+             *  table to which this field has been taken in a select
+             * @property  tableName
+             * @public
+             * @type string
+             */
+            this.tableName= 'dummy';
+        }
 
 
-        /**
-         * constant true if it is a constant expression, false otherwise
-         * @property constant
-         * @public
-         * @type boolean
-         */
 
-        /**
-         * name of this field in the select result
-         * @property fieldName
-         * public
-         * @type string
-         **/
 
-        /**
-         * true if the function is the true constant
-         * @property isTrue
-         * public
-         * @type boolean
-         **/
-
-        /**
-         * true if the function is the false constant
-         * @property isFalse
-         * @public
-         * @type boolean
-         **/
-
-        /**
-         *  table to which this field has been taken in a select
-         * @property  tableName
-         * public
-         * @type string
-         */
 
         /**
          * Compare function provider to help building conditions that can be applyed both to collections,
@@ -174,26 +186,27 @@
         function toSqlFun(f, toSql) {
             var tryInvoke = f();
             if (tryInvoke !== undefined) {
+                //noinspection JSValidateTypes
                 f = constant(tryInvoke);
             } else {
                 f.constant = false;
                 f.toSql = toSql;
             }
-            f.as = as;
+            /**
+             * Establish the output name for an expression
+             * @method as
+             * @param {string} fieldName
+             * @return {sqlFun}
+             */
+            f.as = function(fieldName){
+                f.fieldName= fieldName;
+                //noinspection JSValidateTypes
+                return f;
+            };
+            //noinspection JSValidateTypes
             return f;
         }
 
-
-        /**
-         * Establish the output name for an expression
-         * @method as
-         * @param {string} fieldName
-         * @return {sqlFun}
-         */
-        function as(fieldName) {
-            this.fieldName = fieldName;
-            return this;
-        }
 
 
         /**
@@ -212,9 +225,13 @@
                 return environmentFunction(environment);
             };
             f.toSql = function(formatter, environment) {
+                //noinspection JSUnresolvedFunction
                 return formatter.quote(environmentFunction(environment));
             };
-            f.as = as;
+            f.as = function(fieldName){
+                f.fieldName= fieldName;
+                return f;
+            };
             f.constant = false;
             f.toString = function() {
                 return 'context(' + environmentFunction.toString() + ')';
@@ -250,6 +267,7 @@
                 return fieldName;
             };
             var toSql = function(formatter) {
+                //noinspection JSUnresolvedFunction
                 return formatter.field(fieldName, tableName);
             };
             return toSqlFun(f, toSql);
@@ -292,7 +310,10 @@
                 return 'constant(' + k.toString() + ')';
             };
             f.constant = true;
-            f.as = as;
+            f.as = function(fieldName){
+                f.fieldName= fieldName;
+                return f;
+            };
             if (k === true) {
                 f.isTrue = true;
                 f.toSql = function(formatter) {
@@ -314,6 +335,7 @@
              tree top-down scan ends.
              */
             f.toSql = function(formatter) {
+                //noinspection JSUnresolvedFunction
                 return formatter.quote(k);
             };
             return f;
@@ -336,6 +358,7 @@
             //if expr has .toSql extension, it can be directly evaluated with a simple invoke. If it is called with
             // undefined, and it is not a constant, it must return undefined. In no other case undefined is
             // allowed as return value from sqlFun invocation
+            //noinspection JSUnresolvedVariable
             if (expr.toSql) {
                 return expr(r, context);
             }
@@ -387,6 +410,7 @@
                 return (res !== null);
             };
             var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
                 return formatter.isNotNull(expr, context);
             };
             return toSqlFun(f, toSql);
@@ -412,6 +436,7 @@
                 return '-' + expr.toString();
             };
             var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
                 return formatter.minus(expr, context);
             };
             return toSqlFun(f, toSql);
@@ -471,6 +496,7 @@
                 return 'bitSet(' + expr.toString() + ',' + nbit.toString() + ')';
             };
             var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
                 return formatter.bitSet(expr, nbit, context);
             };
             return toSqlFun(f, toSql);
@@ -506,6 +532,7 @@
                 return 'bitClear(' + expr.toString() + ',' + nbit.toString() + ')';
             };
             var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
                 return formatter.bitClear(expr, nbit, context);
             };
             return toSqlFun(f, toSql);
@@ -553,6 +580,7 @@
             };
 
             var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
                 return formatter.testMask(expr, mask, val, context);
             };
             return toSqlFun(f, toSql);
@@ -597,6 +625,7 @@
                 return 'between(' + expr.toString() + ',' + min.toString() + ',' + max.toString() + ')';
             };
             var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
                 return formatter.between(expr, min, max, context);
             };
             return toSqlFun(f, toSql);
@@ -635,6 +664,7 @@
                 return 'like(' + expr.toString() + ',' + mask.toString() + ')';
             };
             var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
                 return formatter.like(expr, mask, context);
             };
             return toSqlFun(f, toSql);
@@ -689,6 +719,7 @@
                 return 'distinct(' + arrayToString(exprList) + ')';
             };
             var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
                 return formatter.distinct(exprList, context);
             };
             return toSqlFun(f, toSql);
@@ -726,6 +757,7 @@
                 return 'isIn(' + expr.toString() + ',' + arrayToString(list) + ')';
             };
             var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
                 return formatter.isIn(expr, list, context);
             };
             return toSqlFun(f, toSql);
@@ -969,26 +1001,29 @@
             if (!_.isArray(a)) {
                 a = [].slice.call(arguments);
             }
-            var optimizedArgs = _.filter(a, function(el) {
-                if (el === undefined) {
-                    return false;
-                }
-                if (el === null) {
-                    return false;
-                }
+            var optimizedArgs = _.filter(a,
+                function (el) {
+                    if (el === undefined) {
+                        return false;
+                    }
+                    if (el === null) {
+                        return false;
+                    }
 
-                if (el === false) {
-                    return false;
-                }
-                if (el.isFalse) {
-                    return false;
-                }
+                    if (el === false) {
+                        return false;
+                    }
+                    //noinspection JSUnresolvedVariable
+                    if (el.isFalse) {
+                        return false;
+                    }
 
-                if (el === true || el.isTrue) {
-                    alwaysTrue = true;
-                }
-                return true;
-            });
+                    //noinspection JSUnresolvedVariable
+                    if (el === true || el.isTrue) {
+                        alwaysTrue = true;
+                    }
+                    return true;
+                });
             if (alwaysTrue) {
                 return constant(true);
             }
@@ -996,7 +1031,7 @@
                 return constant(false);
             }
 
-            f = function(r, context) {
+            f = function (r, context) {
                 var i,
                     someUndefined = false;
                 for (i = 0; i < optimizedArgs.length; i += 1) {
@@ -1013,11 +1048,13 @@
                 }
                 return false;
             };
-            f.toString = function() {
+            f.toString = function () {
                 return 'or(' + arrayToString(a) + ')';
             };
-            var toSql = function(formatter, context) {
-                return formatter.joinOr(_.map(optimizedArgs, function(v) {
+            var toSql = function (formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.joinOr(_.map(optimizedArgs, function (v) {
+                    //noinspection JSUnresolvedFunction
                     return formatter.toSql(v, context);
                 }));
             };
@@ -1052,7 +1089,9 @@
                 return 'coalesce(' + arrayToString(a) + ')';
             };
             var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
                 return formatter.coalesce(_.map(a, function(v) {
+                    //noinspection JSUnresolvedFunction
                     return formatter.toSql(v, context);
                 }));
             };
@@ -1289,6 +1328,7 @@
             };
 
             var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
                 return formatter.convertToInt(expr, context);
             };
             return toSqlFun(f, toSql);
@@ -1321,6 +1361,7 @@
             };
 
             var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
                 return formatter.convertToString(expr, maxLen, context);
             };
             return toSqlFun(f, toSql);
@@ -1346,9 +1387,11 @@
                 if (el === null) {
                     return false;
                 }
+                //noinspection JSUnresolvedVariable
                 if (el === true || el.isTrue) {
                     return false;
                 }
+                //noinspection JSUnresolvedVariable
                 if (el === false || el.isFalse) {
                     alwaysFalse = true;
                 }
@@ -1384,7 +1427,9 @@
                 return 'and(' + arrayToString(a) + ')';
             };
             var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
                 return formatter.joinAnd(_.map(optimizedArgs, function(v) {
+                    //noinspection JSUnresolvedFunction
                     return formatter.toSql(v, context);
                 }));
             };
@@ -1453,6 +1498,7 @@
             var toSql = function(formatter, context) {
                 var k, v;
 
+                //noinspection JSUnresolvedFunction
                 return formatter.joinAnd(
                     _.map(
                         _.zip(keys, picked),
@@ -1615,6 +1661,7 @@
                 return 'div(' + expr.toString() + ',' + expr2.toString() + ')';
             };
             var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
                 return formatter.div(expr, expr2, context);
             };
             return toSqlFun(f, toSql);
@@ -1791,6 +1838,7 @@
             };
             var toSql = function(formatter, context) {
                 return formatter.add(_.map(a, function(v) {
+                    //noinspection JSUnresolvedFunction
                     return formatter.toSql(v, context);
                 }));
             };
@@ -1853,6 +1901,7 @@
         };
 
         // Some AMD build optimizers like r.js check for condition patterns like the following:
+        //noinspection JSUnresolvedVariable
         if (typeof define == 'function' && typeof define.amd == 'object' && define.amd) {
             // Expose lodash to the global object when an AMD loader is present to avoid
             // errors in cases where lodash is loaded by a script tag and not intended
