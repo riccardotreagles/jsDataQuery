@@ -102,6 +102,7 @@
         /**
          * Converts a SqlFun into a string
          * @method toSql
+         * @public
          * @param {sqlFormatter} formatter  used to obtain details about making the expression,
          *      see sqlFormatter for an example
          * @param {object} context  is the context into which the expression have to be evaluated
@@ -111,31 +112,36 @@
 
         /**
          * constant true if it is a constant expression, false otherwise
-         * @property isTrue
+         * @property constant
+         * @public
          * @type boolean
          */
 
         /**
          * name of this field in the select result
          * @property fieldName
+         * public
          * @type string
          **/
 
         /**
          * true if the function is the true constant
          * @property isTrue
+         * public
          * @type boolean
          **/
 
         /**
          * true if the function is the false constant
          * @property isFalse
+         * @public
          * @type boolean
          **/
 
         /**
          *  table to which this field has been taken in a select
          * @property  tableName
+         * public
          * @type string
          */
 
@@ -143,6 +149,7 @@
          * Compare function provider to help building conditions that can be applyed both to collections,
          *  using the returned function as a filter, or to a database, using the toSql() method
          *  @class jsDataQuery
+         *  @public
          */
 
         /**
