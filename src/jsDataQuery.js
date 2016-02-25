@@ -167,7 +167,7 @@
         /**
          * Check if an object is the null or undefined constant
          * @method isNullOrUndefined
-         * @param {sqlFun|undefined|null} o
+         * @param {sqlFun|undefined|null|object} o
          * @return {boolean} true if o is null or undefined
          */
         function isNullOrUndefined(o) {
@@ -281,7 +281,7 @@
          *  12 is returned unchanged,
          *  a function is returned  unchanged
          * @method autofield
-         * @param {sqlFun|string} p
+         * @param {sqlFun|string|object} p
          * @return {sqlFun}
          */
         function autofield(p) {
@@ -376,7 +376,7 @@
         /**
          * Check if an expression evaluates to null
          * @method isNull
-         * @param {sqlFun|string} expr1
+         * @param {sqlFun|string|object} expr1
          * @return {sqlFun} f where f(expr) = true if expr evaluates to null
          *  f.toSql() = something like '(EXPR is null)' where EXPR is the sql representation of the given expr
          */
@@ -401,7 +401,7 @@
         /**
          * Check if an expression does not evaluate to null
          * @method isNotNull
-         * @param {sqlFun|string} expr1
+         * @param {sqlFun|string|object} expr1
          * @return {sqlFun} f where f(expr) = true if expr does not evaluate to null
          *  f.toSql() = something like '(EXPR is not null)' where EXPR is the sql representation of the given expr
          */
@@ -427,7 +427,7 @@
 
         /**
          * @method minus
-         * @param {sqlFun|string} expr1
+         * @param {sqlFun|string|object} expr1
          * @return {sqlFun} f where f(r) = - r. r should evaluate into a number
          */
         function minus(expr1) {
@@ -452,7 +452,7 @@
 
         /**
          * @method not
-         * @param {sqlFun|string} expr1
+         * @param {sqlFun|string|object} expr1
          * @return {sqlFun} f where f(r) = not r. r should evaluate into a boolean
          */
         function not(expr1) {
@@ -476,8 +476,8 @@
         /**
          * Check if the nth bit of expression is set
          * @method bitSet
-         * @param {sqlFun|string}  expression note: this is autofield-ed, so if you can use a field name for it
-         * @param {sqlFun} nbit
+         * @param {sqlFun|string|object}  expression note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} nbit
          * @return {sqlFun}
          */
         function bitSet(expression, nbit) {
@@ -513,7 +513,7 @@
          * Check if the nth bit of expression is not set
          * @method bitClear
          * @param {sqlFun|string} expression note: this is autofield-ed, so if you can use a field name for it
-         * @param {sqlFun} nbit
+         * @param {sqlFun|object} nbit
          * @return {sqlFun}
          */
         function bitClear(expression, nbit) {
@@ -551,8 +551,8 @@
          * check if expr1 & mask === val & mask
          * @method testMask
          * @param {sqlFun|string} expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param {sqlFun} mask
-         * @param {sqlFun} val
+         * @param {sqlFun|object} mask
+         * @param {sqlFun|object} val
          * @return {sqlFun}
          */
         function testMask(expr1, mask, val) {
@@ -597,9 +597,9 @@
         /**
          * Check if expr1 evaluates between min and max
          * @method between
-         * @param {sqlFun|string} expr1  note: this is autofield-ed, so if you can use a field name for it
-         * @param {sqlFun} min
-         * @param {sqlFun}  max
+         * @param {sqlFun|string|object} expr1  note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} min
+         * @param {sqlFun|object}  max
          * @returns {sqlFun}
          */
         function between(expr1, min, max) {
@@ -641,8 +641,8 @@
         /**
          * Checks if expr1 is (sql-like) mask, where mask can contain * and _ characters
          * @method like
-         * @param {sqlFun|string} expr1  expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param {sqlFun} mask  mask is a string or a function that evaluates into a string
+         * @param {sqlFun|string|object} expr1  expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} mask  mask is a string or a function that evaluates into a string
          * @returns {sqlFun}
          * @example like('a','s%') compiles into (a like 's%')
          *        like(const('a'),'s%') compiles into ('a' like 's%')
@@ -697,7 +697,7 @@
         /**
          * Finds distinct values of a list of fields
          * @method distinctVal
-         * @param {sqlFun[]} exprList
+         * @param {(sqlFun|object)[]} exprList
          * @returns {sqlFun}
          */
         function distinct(exprList) {
@@ -736,8 +736,8 @@
         /**
          * checks if expr1 is in the array list
          * @method isIn
-         * @param {sqlfFun|string} expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param {sqlFun[]} list  Array or function that evaluates into an array
+         * @param {sqlfFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {(sqlFun|object)[]} list  Array or function that evaluates into an array
          * @returns {sqlFun}
          */
         function isIn(expr1, list) {
@@ -773,8 +773,8 @@
         /**
          * checks if expr1 is not in the array list
          * @method isNotIn
-         * @param {sqlFun|string }expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param {sqlFun[]} list {Array} Array or function that evaluates into an array
+         * @param {sqlFun|string|object}expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun[]|object[]} list {Array} Array or function that evaluates into an array
          * @returns {sqlFun}
          */
         function isNotIn(expr1, list) {
@@ -794,8 +794,8 @@
         /**
          * checks if expr1 evaluates equal to expr2
          * @method eq
-         * @param {sqlFun|string} expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param {sqlFun} expr2
+         * @param {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} expr2
          * @returns {sqlFun}
          */
         function eq(expr1, expr2) {
@@ -824,8 +824,8 @@
         /**
          * checks if expr1 evaluates different from expr2
          * @method ne
-         * @param {sqlFun|string} expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param {sqlFun} expr2
+         * @param {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} expr2
          * @returns {sqlFun}
          */
         function ne(expr1, expr2) {
@@ -854,8 +854,8 @@
         /**
          * checks if expr1 evaluates less than from expr2
          * @method lt
-         * @param {sqlFun|string} expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param {sqlFun} expr2
+         * @param {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} expr2
          * @returns {sqlFun}
          */
         function lt(expr1, expr2) {
@@ -889,8 +889,8 @@
         /**
          * checks if expr1 evaluates less than or equal to from expr2
          * @method le
-         * @param {sqlFun|string} expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param {sqlFun} expr2
+         * @param {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} expr2
          * @returns {sqlFun}
          */
         function le(expr1, expr2) {
@@ -925,8 +925,8 @@
         /**
          * checks if expr1 evaluates greater than expr2
          * @method gt
-         * @param {sqlFun|string} expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param {sqlFun} expr2
+         * @param {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} expr2
          * @returns {sqlFun}
          */
         function gt(expr1, expr2) {
@@ -961,8 +961,8 @@
         /**
          * checks if expr1 evaluates greater than or equal to expr2
          * @method ge
-         * @param  {sqlFun|string} expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param  {sqlFun} expr2
+         * @param  {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param  {sqlFun|object} expr2
          * @returns {sqlFun}
          */
         function ge(expr1, expr2) {
@@ -998,7 +998,7 @@
         /**
          * checks if at least one of supplied expression evaluates to a truthy value
          * @method or
-         * @param {sqlFun[]} arr  array or list of expression
+         * @param {sqlFun[]|object[]} arr  array or list of expression
          * @returns {sqlFun}
          */
         function or(arr) {
@@ -1070,7 +1070,7 @@
 
         /**
          * return the first object not null in the  array parameter
-         * @param {sqlFun[]} arr
+         * @param {sqlFun[]|object[]} arr
          * @returns {sqlFun}
          */
         function coalesce(arr) {
@@ -1109,8 +1109,8 @@
         /**
          * checks if expr1 is null or equal to expr2
          * @method isNullOrEq
-         * @param  {sqlFun|string} expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param  {sqlFun} expr2
+         * @param  {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param  {sqlFun|object} expr2
          * @return {sqlFun}
          */
         function isNullOrEq(expr1, expr2) {
@@ -1121,8 +1121,8 @@
         /**
          * checks if expr1 is null or greater than expr2
          * @method isNullOrGt
-         * @param  {sqlFun|string} expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param   {sqlFun} expr2
+         * @param  {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param   {sqlFun|object} expr2
          * @returns {sqlFun}
          */
         function isNullOrGt(expr1, expr2) {
@@ -1145,8 +1145,8 @@
         /**
          * checks if expr1 is null or less than expr2
          * @method isNullOrLt
-         * @param  {sqlFun|string} expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param  {sqlFun} expr2
+         * @param  {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param  {sqlFun|object} expr2
          * @return {sqlFun}
          */
         function isNullOrLt(expr1, expr2) {
@@ -1157,8 +1157,8 @@
         /**
          * checks if expr1 is null or less than or equal to expr2
          * @method isNullOrLe
-         * @param {sqlFun|string} expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param {sqlFun} expr2
+         * @param {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} expr2
          * @returns {sqlFun}
          */
         function isNullOrLe(expr1, expr2) {
@@ -1170,7 +1170,7 @@
          * Evaluates the maximum value of an expression in a table. If any undefined is found, return undefined.
          * Null are skipped. If all is null return null
          * @method max
-         * @param {sqlFun|string} expr1
+         * @param {sqlFun|string|object} expr1
          * @returns {sqlFun}
          */
         function max(expr1) {
@@ -1215,7 +1215,7 @@
          * Evaluates the minimum value of an expression in a table. If any undefined is found, return undefined.
          * Null are skipped. If all is null return null
          * @method min
-         * @param {sqlFun|string} expr1
+         * @param {sqlFun|string|object} expr1
          * @returns {sqlFun}
          */
         function min(expr1) {
@@ -1259,9 +1259,9 @@
 
         /**
          * @method substring
-         * @param {sqlFun|string} expr1
-         * @param {sqlFun} start
-         * @param {sqlFun} len
+         * @param {sqlFun|string|object} expr1
+         * @param {sqlFun|object} start
+         * @param {sqlFun|object} len
          * @returns {sqlFun}
          */
         function substring(expr1, start, len) {
@@ -1311,7 +1311,7 @@
         /**
          * Converts a generic expression into an integer
          * @method convertToInt
-         * @param {sqlFun|string} expr1
+         * @param {sqlFun|string|object} expr1
          * @returns {sqlFun}
          */
         function convertToInt(expr1) {
@@ -1344,8 +1344,8 @@
         /**
          * Converts a generic expression into a string
          * @method convertToString
-         * @param {sqlFun|string} expr1
-         * @param {sqlFun} maxLen maximum string len
+         * @param {sqlFun|string|object} expr1
+         * @param {sqlFun|object} maxLen maximum string len
          * @returns {sqlFun}
          */
         function convertToString(expr1, maxLen) {
@@ -1377,7 +1377,7 @@
         /**
          * checks if all supplied expression evaluate to truthy values
          * @method and
-         * @param {sqlFun[]} arr array or list of expression
+         * @param {sqlFun[]|object[]} arr array or list of expression
          * @return {sqlFun}
          */
         function and(arr) {
@@ -1449,8 +1449,8 @@
          * Compares a set of keys of an object with an array of values or with fields of another object
          *  values can be an array or an object
          * @method mcmp
-         * @param {string[]} keys
-         * @param {sqlFun[]} values
+         * @param {string[]|object[]} keys
+         * @param {sqlFun[]|object[]} values
          * @param {string} [alias]
          * @return {sqlFun} f(r) = true if :
          *  case values is an array: r[keys[i]] = values[i] for each i=0..keys.length-1
@@ -1596,8 +1596,8 @@
         /**
          * returns a functions that does a subtraction
          * @method sub
-         * @param {sqlFun|string} expr1
-         * @param {sqlFun} expr2
+         * @param {sqlFun|string|object} expr1
+         * @param {sqlFun|object} expr2
          * @return {sqlFun}
          */
         function sub(expr1, expr2) {
@@ -1637,8 +1637,8 @@
         /**
          * returns a functions that does a division
          * @method div
-         * @param {sqlFun|string} expr1
-         * @param {sqlFun} expr2
+         * @param {sqlFun|string|object} expr1
+         * @param {sqlFun|object} expr2
          * @return {sqlFun}
          */
         function div(expr1, expr2) {
@@ -1677,7 +1677,7 @@
         /**
          * returns a functions that evaluates the sum of a list or array of values given when it is CREATED
          * @method add
-         * @param {sqlFun[]} values
+         * @param {sqlFun[]|object[]} values
          * @return {sqlFun}
          */
         function add(values) {
@@ -1716,7 +1716,7 @@
         /**
          * returns a functions that evaluates the concatenation of a list or array of strings given when it is CREATED
          * @method concat
-         * @param {sqlFun[]} values
+         * @param {sqlFun[]|object[]} values
          * @return {sqlFun}
          */
         function concat(values) {
@@ -1756,7 +1756,7 @@
         /**
          * Evaluates the sum of an array of element given at run time
          * @method sum
-         * @param {sqlFun|string} expr1
+         * @param {sqlFun|string|object} expr1
          * @returns {sqlFun}
          */
         function sum(expr1) {
@@ -1807,7 +1807,7 @@
          * returns a functions that evaluates the multiply of a list or array of values
          * If some operand is 0, returns the always 0 function
          * @method mul
-         * @param {sqlFun[]} values
+         * @param {sqlFun[]|object[]} values
          * @return {sqlFun}
          */
         function mul(values) {
