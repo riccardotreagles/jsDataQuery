@@ -121,10 +121,10 @@
              * @public
              * @param {sqlFormatter} formatter  used to obtain details about making the expression,
              *      see sqlFormatter for an example
-             * @param {object} context  is the context into which the expression have to be evaluated
+             * @param {Environment} context  is the context into which the expression have to be evaluated
              * @return {string} //the sql representation of the expression
              */
-            this.toSql= function(){
+            this.toSql= function(sqlFormatter, context){
 
             }
 
