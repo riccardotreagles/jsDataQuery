@@ -1474,7 +1474,7 @@
                 });
             }
 
-            if (_.contains(picked, null)) {
+            if (_.includes(picked, null)) {
                 return constant(false);
             }
 
