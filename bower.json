@@ -4,7 +4,7 @@
   "homepage": "https://github.com/gaelazzo/jsDataQuery",
   "repository": {
     "type": "git",
-    "url":"git://github.com/gaelazzo/jsDataQuery"
+    "url":"git://github.com/gaelazzo/jsDataQuery.git"
   },
   "authors": [
     "Gaetano Lazzo <gaetano.lazzo@gmail.com>"
