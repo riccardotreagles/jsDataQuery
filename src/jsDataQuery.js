@@ -264,6 +264,7 @@
             f.tableName = tableName;
             f.fieldName = fieldName;
             f.toString = function() {
+                if (tableName) return tableName+'.'+fieldName;
                 return fieldName;
             };
             var toSql = function(formatter) {
@@ -917,6 +918,7 @@
                 return 'le(' + expr.toString() + ',' + expr2.toString() + ')';
             };
             var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
                 return formatter.le(expr, expr2, context);
             };
             return toSqlFun(f, toSql);
@@ -990,6 +992,7 @@
                 return 'ge(' + toString(expr) + ',' + toString(expr2) + ')';
             };
             var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
                 return formatter.ge(expr, expr2, context);
             };
             return toSqlFun(f, toSql);
@@ -1527,7 +1530,7 @@
          * Compares a set of keys of an object with an array of values or with fields of another object
          * @method mcmpLike
          * @param {object} example
-         * @param {string} [alias]
+         * @param {string} [alias] eventually table alias to use in conjunction with example field names
          * @return {sqlFun} f(r) = true if  for each non empty field of r:
          *  case field is a string containing a %:  field LIKE example[field]
          *  otherwise: field = example[field]
