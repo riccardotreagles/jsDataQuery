@@ -4,7 +4,7 @@
   "homepage": "https://github.com/gaelazzo/jsDataQuery",
   "repository": {
     "type": "git",
-    "url":"git://github.com/gaelazzo/jsDataQuery.git"
+    "url":"git://github.com/gaelazzo/jsDataQuery"
   },
   "authors": [
     "Gaetano Lazzo <gaetano.lazzo@gmail.com>"
@@ -34,7 +34,7 @@
     "doc"
   ],
   "dependencies": {
-    "lodash": "~3.9.3"
+    "lodash": "4.6.1"
   },
   "devdependencies": {
     "jasmine": "~2.2.1"
