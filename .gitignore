@@ -1,0 +1,9 @@
+bower_components
+/node_modules
+
+jsDataQuery.njsproj
+jsDataQuery.sln
+.idea
+doc
+.ntvs_analysis.dat
+*.suo
