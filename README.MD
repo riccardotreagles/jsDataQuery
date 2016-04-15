@@ -67,4 +67,6 @@ where $q.field(x) is the function that applied to an object will return the fiel
     });
 
 Here f and g are the function that compares the field named 'a' of the argument with the constant 1.
-     
+
+
+![](https://travis-ci.org/gaelazzo/jsDataQuery.svg?branch=master)     
