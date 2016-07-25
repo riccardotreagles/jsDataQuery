@@ -212,21 +212,21 @@
         /**
          * Transforms a generic function into a sqlFun, returning a similar function with some additional methods
          * @function context
-         * @param environmentFunction A function to apply to a generic environment
+         * @param {string} environmentVariable  Environment variable name
          * @return {sqlFun}
          * @example if environment = {a:1, b:2} and environmentFunction = function (env){return env.a}
          *   context(environmentFunction) applied to environment will return 1
          */
-        function context(environmentFunction) {
+        function context(environmentVariable) {
             var f = function(environment) {
                 if (environment === undefined) {
                     return undefined;
                 }
-                return environmentFunction(environment);
+                return environment[environmentVariable];
             };
             f.toSql = function(formatter, environment) {
                 //noinspection JSUnresolvedFunction
-                return formatter.quote(environmentFunction(environment));
+                return formatter.quote(environment[environmentVariable]);
             };
             f.as = function(fieldName){
                 f.fieldName= fieldName;
@@ -234,7 +234,7 @@
             };
             f.constant = false;
             f.toString = function() {
-                return 'context(' + environmentFunction.toString() + ')';
+                return 'context(' + environmentVariable + ')';
             };
             return f;
         }

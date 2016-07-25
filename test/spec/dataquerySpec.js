@@ -46,8 +46,7 @@ describe('DataQuery functions', function () {
   describe('ctx function', function () {
     it ('simple fields should be correctly evaluated', function (){
       var env = {a:1, b:2},
-        js = fieldGet('a'),
-        ctxFun = $q.context(js);
+        ctxFun = $q.context('a');
       expect(ctxFun(env)).toBe(1);
       env.a = 10;
       expect(ctxFun(env)).toBe(10);
@@ -55,20 +54,19 @@ describe('DataQuery functions', function () {
 
     it('array elements should be correctly evaluated', function () {
       var env = {a: 1, b: 2, c:['a','b','c']},
-        js = function(env) { return env.c[1];},
-        ctxFun = $q.context(js);
-      expect(ctxFun(env)).toBe('b');
+        ctxFun = $q.context('c');
+      expect(ctxFun(env)[1]).toBe('b');
       env.c[1]='q';
-      expect(ctxFun(env)).toBe('q');
+      expect(ctxFun(env)[1]).toBe('q');
     });
 
     it('field objects should be correctly evaluated', function () {
       var env = {a: 1, b: 2, c: {a:'AA',b:'BB'}},
         js = function (env){return env.c.b;},
-        ctxFun = $q.context(js);
-      expect(ctxFun(env)).toBe('BB');
+        ctxFun = $q.context('c');
+      expect(ctxFun(env).b).toBe('BB');
       env.c.b = 'q';
-      expect(ctxFun(env)).toBe('q');
+      expect(ctxFun(env).b).toBe('q');
     });
 
   });
