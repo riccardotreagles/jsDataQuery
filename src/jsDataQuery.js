@@ -236,6 +236,10 @@
             f.toString = function() {
                 return 'context(' + environmentVariable + ')';
             };
+
+            f.myName = 'context';
+			f.myArguments = arguments;
+
             return f;
         }
 
@@ -271,6 +275,10 @@
                 //noinspection JSUnresolvedFunction
                 return formatter.field(fieldName, tableName);
             };
+
+            f.myName = 'field';
+			f.myArguments = arguments;
+
             return toSqlFun(f, toSql);
         }
 
@@ -315,6 +323,10 @@
                 f.fieldName= fieldName;
                 return f;
             };
+
+            f.myName = 'constant';
+			f.myArguments = arguments;
+
             if (k === true) {
                 f.isTrue = true;
                 f.toSql = function(formatter) {
@@ -393,6 +405,10 @@
                 }
                 return (res === null);
             };
+
+            f.myName = 'isNull';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 return formatter.isNull(expr, context);
             };
@@ -417,6 +433,10 @@
                 }
                 return (res !== null);
             };
+
+            f.myName = 'isNotNull';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
                 return formatter.isNotNull(expr, context);
@@ -443,6 +463,10 @@
             f.toString = function() {
                 return '-' + expr.toString();
             };
+
+            f.myName = 'minus';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
                 return formatter.minus(expr, context);
@@ -468,6 +492,10 @@
             f.toString = function() {
                 return 'not(' + expr.toString() + ')';
             };
+
+            f.myName = 'not';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 return formatter.not(expr, context);
             };
@@ -503,6 +531,10 @@
             f.toString = function() {
                 return 'bitSet(' + expr.toString() + ',' + nbit.toString() + ')';
             };
+
+            f.myName = 'bitSet';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
                 return formatter.bitSet(expr, nbit, context);
@@ -539,14 +571,16 @@
             f.toString = function() {
                 return 'bitClear(' + expr.toString() + ',' + nbit.toString() + ')';
             };
+
+            f.myName = 'bitClear';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
                 return formatter.bitClear(expr, nbit, context);
             };
             return toSqlFun(f, toSql);
-
         }
-
 
         /**
          * check if expr1 & mask === val & mask
@@ -586,6 +620,9 @@
             f.toString = function() {
                 return 'testMask(' + expr.toString() + ',' + mask.toString() + ',' + val.toString() + ')';
             };
+
+            f.myName = 'testMask';
+			f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -632,6 +669,10 @@
             f.toString = function() {
                 return 'between(' + expr.toString() + ',' + min.toString() + ',' + max.toString() + ')';
             };
+
+            f.myName = 'between';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
                 return formatter.between(expr, min, max, context);
@@ -671,6 +712,10 @@
             f.toString = function() {
                 return 'like(' + expr.toString() + ',' + mask.toString() + ')';
             };
+
+            f.myName = 'like';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
                 return formatter.like(expr, mask, context);
@@ -726,6 +771,10 @@
             f.toString = function() {
                 return 'distinct(' + arrayToString(exprList) + ')';
             };
+
+            f.myName = 'distinct';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
                 return formatter.distinct(exprList, context);
@@ -764,6 +813,10 @@
             f.toString = function() {
                 return 'isIn(' + expr.toString() + ',' + arrayToString(list) + ')';
             };
+
+            f.myName = 'isIn';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
                 return formatter.isIn(expr, list, context);
@@ -816,6 +869,10 @@
             f.toString = function() {
                 return 'eq(' + toString(expr) + ',' + toString(expr2) + ')';
             };
+
+            f.myName = 'eq';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 return formatter.eq(expr, expr2, context);
             };
@@ -845,6 +902,10 @@
             f.toString = function() {
                 return 'ne(' + expr.toString() + ',' + expr2.toString() + ')';
             };
+
+            f.myName = 'ne';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 return formatter.ne(expr, expr2, context);
             };
@@ -881,6 +942,10 @@
             f.toString = function() {
                 return 'lt(' + expr.toString() + ',' + expr2.toString() + ')';
             };
+
+            f.myName = 'lt';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 return formatter.lt(expr, expr2, context);
             };
@@ -917,6 +982,10 @@
             f.toString = function() {
                 return 'le(' + expr.toString() + ',' + expr2.toString() + ')';
             };
+
+            f.myName = 'le';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
                 return formatter.le(expr, expr2, context);
@@ -954,6 +1023,10 @@
             f.toString = function() {
                 return 'gt(' + expr.toString() + ',' + expr2.toString() + ')';
             };
+
+            f.myName = 'gt';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 return formatter.gt(expr, expr2, context);
             };
@@ -991,6 +1064,10 @@
             f.toString = function() {
                 return 'ge(' + toString(expr) + ',' + toString(expr2) + ')';
             };
+
+            f.myName = 'ge';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
                 return formatter.ge(expr, expr2, context);
@@ -1061,6 +1138,10 @@
             f.toString = function () {
                 return 'or(' + arrayToString(a) + ')';
             };
+
+            f.myName = 'or';
+			f.myArguments = arguments;
+
             var toSql = function (formatter, context) {
                 //noinspection JSUnresolvedFunction
                 return formatter.joinOr(_.map(optimizedArgs, function (v) {
@@ -1098,6 +1179,10 @@
             f.toString = function() {
                 return 'coalesce(' + arrayToString(a) + ')';
             };
+
+            f.myName = 'coalesce';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
                 return formatter.coalesce(_.map(a, function(v) {
@@ -1207,6 +1292,9 @@
                 return 'max(' + expr.toString() + ')';
             };
 
+            f.myName = 'max';
+			f.myArguments = arguments;
+
             f.grouping = true;
             var toSql = function(formatter, context) {
                 return formatter.max(expr, context);
@@ -1251,6 +1339,9 @@
             f.toString = function() {
                 return 'min(' + expr.toString() + ')';
             };
+
+            f.myName = 'min';
+			f.myArguments = arguments;
 
             f.grouping = true;
             var toSql = function(formatter, context) {
@@ -1305,6 +1396,9 @@
                 return 'substring(' + toString(expr) + ',' + toString(start) + ',' + toString(len) + ')';
             };
 
+            f.myName = 'substring';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 return formatter.substring(expr, start, len, context);
             };
@@ -1318,7 +1412,6 @@
          * @returns {sqlFun}
          */
         function convertToInt(expr1) {
-
             var expr = autofield(expr1),
                 f = function(r, context) {
                     if (r === undefined) {
@@ -1336,6 +1429,9 @@
             f.toString = function() {
                 return 'convertToInt(' + expr.toString() + ')';
             };
+
+            f.myName = 'convertToInt';
+			f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -1369,6 +1465,9 @@
             f.toString = function() {
                 return 'convertToString(' + expr.toString() + ',' + maxLen.toString() + ')';
             };
+
+            f.myName = 'convertToString';
+			f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -1436,6 +1535,10 @@
             f.toString = function() {
                 return 'and(' + arrayToString(a) + ')';
             };
+
+            f.myName = 'and';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
                 return formatter.joinAnd(_.map(optimizedArgs, function(v) {
@@ -1478,7 +1581,6 @@
                 return constant(false);
             }
 
-
             var f = function(r, context) {
                 if (r === undefined) {
                     return undefined;
@@ -1504,6 +1606,9 @@
             f.toString = function() {
                 return 'mcmp(' + arrayToString(keys) + ',' + arrayToString(picked) + ')';
             };
+
+            f.myName = 'mcmp';
+			f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 var k, v;
@@ -1555,9 +1660,7 @@
                 }
             });
             return and(exprArr);
-
         }
-
 
         /**
              * Compares a set of keys of an object with an array of values or with fields of another object
@@ -1592,9 +1695,7 @@
                 }
             });
             return and(exprArr);
-
         }
-
 
         /**
          * returns a functions that does a subtraction
@@ -1630,6 +1731,10 @@
             f.toString = function() {
                 return expr.toString() + '-' + expr2.toString();
             };
+
+            f.myName = 'sub';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 return formatter.sub(expr, expr2, context);
             };
@@ -1670,6 +1775,10 @@
             f.toString = function() {
                 return 'div(' + expr.toString() + ',' + expr2.toString() + ')';
             };
+
+            f.myName = 'div';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
                 return formatter.div(expr, expr2, context);
@@ -1710,6 +1819,10 @@
             f.toString = function() {
                 return 'add(' + arrayToString(a) + ')';
             };
+
+            f.myName = 'add';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 return formatter.add(a, context);
             };
@@ -1749,6 +1862,10 @@
             f.toString = function() {
                 return 'concat(' + arrayToString(values) + ')';
             };
+
+            f.myName = 'concat';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 return formatter.concat(a, context);
             };
@@ -1796,6 +1913,9 @@
             f.toString = function() {
                 return 'sum(' + expr.toString() + ')';
             };
+
+            f.myName = 'sum';
+			f.myArguments = arguments;
 
             f.grouping = true;
             var toSql = function(formatter, context) {
@@ -1846,6 +1966,10 @@
             f.toString = function() {
                 return 'mul(' + arrayToString(values) + ')';
             };
+
+            f.myName = 'mul';
+			f.myArguments = arguments;
+
             var toSql = function(formatter, context) {
                 return formatter.add(_.map(a, function(v) {
                     //noinspection JSUnresolvedFunction
@@ -1859,6 +1983,54 @@
             return '[' + _.map(arr, function(value) {
                 return toString(value);
             }).join(',') + ']';
+        }
+
+        function toObject(obj) {
+            if (_.isFunction(obj)) {
+                var name = obj.myName;
+                var args = _.map(obj.myArguments, function(arg) {
+                    return toObject(arg);
+                });
+
+                return { 'name': name, 'args': args };
+            }
+
+            if (_.isArray(obj)) {
+                var arr = _.map(obj, function(item) {
+                    return toObject(item);
+                });
+                return { 'array': arr };
+            }
+
+            return { 'value': obj };
+        }
+
+        function fromObject(obj) {
+            if (!_.isObject(obj)) {
+                throw "Must be an object";
+            }
+
+            if (obj.hasOwnProperty('value')) {
+                return obj.value;
+            }
+
+            if (obj.hasOwnProperty('array')) {
+                return _.map(obj.array, function(item) {
+                    return fromObject(item);
+                });
+            }
+
+            if (obj.hasOwnProperty('name') && obj.hasOwnProperty('args')) {
+                var name = obj.name;
+                var args = _.map(obj.args, function(arg) {
+                    return fromObject(arg);
+                });
+
+                var f = dataQuery[name];
+                return f.apply(this, args);
+            }
+
+            return null;
         }
 
         var dataQuery = {
@@ -1907,6 +2079,8 @@
             convertToString: convertToString,
             sum: sum,
             coalesce: coalesce,
+            toObject: toObject,
+            fromObject: fromObject,
             myLoDash: _ //for testing purposes
         };
 

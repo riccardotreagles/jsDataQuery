@@ -625,6 +625,40 @@ describe('DataQuery functions', function () {
       expect(f.isFalse).toBeTruthy();
     });
 
-  })
+  });
+
+  describe('toObject should convert a DataQuery to a plain object', function () {
+
+    it('$q.toObject should not return null', function () {
+      var x = ['a','b'],
+        obj = $q.toObject(x);
+      expect(obj).not.toBe(null);
+    });
+
+    it('$q.toObject should not return null', function () {
+      var x = 5,
+        obj = $q.toObject(x);
+      expect(obj).not.toBe(null);
+    });
+
+    it('$q.toObject should not return null', function () {
+      var x = 15,
+        y = [2, 5],
+        f = $q.sub(x, $q.mul(y)),
+        obj = $q.toObject(f);
+      expect(obj).not.toBe(null);
+    });
+
+  });
+
+  describe('fromObject should convert a plain object to a DataQuery', function () {
+
+    it('$q.fromObject should return a function', function () {
+      var obj = {"name":"sub","args":[{"value":15},{"name":"constant","args":[{"value":10}]}]},
+        f = $q.fromObject(obj);
+      expect(f).toEqual(jasmine.any(Function));
+    });
+
+  });
 
 });
