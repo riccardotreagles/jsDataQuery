@@ -1985,6 +1985,11 @@
             }).join(',') + ']';
         }
 
+        /**
+         * Converts a sqlFun to an plain object.
+         * @param {sqlFun|sqlFun[]|object|object[]} obj
+         * @returns {object}
+         */
         function toObject(obj) {
             if (_.isFunction(obj)) {
                 var name = obj.myName;
@@ -2005,6 +2010,11 @@
             return { 'value': obj };
         }
 
+        /**
+         * Converts an object back to a sqlFun
+         * @param {object} obj
+         * @returns {sqlFun|sqlFun[]|object|object[]}
+         */
         function fromObject(obj) {
             if (!_.isObject(obj)) {
                 throw "Must be an object";
