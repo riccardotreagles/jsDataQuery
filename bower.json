@@ -34,7 +34,7 @@
     "doc"
   ],
   "dependencies": {
-    "lodash": "4.6.1"
+    "lodash": "4.17.4"
   },
   "devdependencies": {
     "jasmine": "~2.2.1"
