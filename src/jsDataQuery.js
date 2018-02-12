@@ -1,4 +1,4 @@
-/*globals sqlFormatter,define,quote,global */
+/*globals sqlFormatter,define,quote,global,module,exports */
 /*jslint nomen: true*/
 /*jslint bitwise: true */
 
@@ -64,7 +64,7 @@
         var freeModule = objectTypes[typeof module] && module && !module.nodeType && module;
 
         /** Detect free variable `global` from Node.js or Browserified code and use it as `root`. (thanks lodash)*/
-        var freeGlobal = freeExports && freeModule && typeof global == 'object' && global;
+        var freeGlobal = freeExports && freeModule && typeof global === 'object' && global;
         if (freeGlobal && (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal || freeGlobal.self === freeGlobal)) {
             root = freeGlobal;
         }
@@ -126,7 +126,7 @@
              */
             this.toSql= function(sqlFormatter, context){
 
-            }
+            };
 
             /**
              * true if the function is the true constant
@@ -238,11 +238,10 @@
             };
 
             f.myName = 'context';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             return f;
         }
-
 
         /**
          * Gets a field from an object. This is a very important function to distinguish between generic strings and
@@ -268,7 +267,9 @@
             f.tableName = tableName;
             f.fieldName = fieldName;
             f.toString = function() {
-                if (tableName) return tableName+'.'+fieldName;
+                if (tableName) {
+                    return tableName+'.'+fieldName;
+                }
                 return fieldName;
             };
             var toSql = function(formatter) {
@@ -277,7 +278,7 @@
             };
 
             f.myName = 'field';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             return toSqlFun(f, toSql);
         }
@@ -325,7 +326,7 @@
             };
 
             f.myName = 'constant';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             if (k === true) {
                 f.isTrue = true;
@@ -396,8 +397,12 @@
         function isNull(expr1) {
             var expr = autofield(expr1);
             var f = function(r, context) {
-                if (expr === undefined) return undefined;
-                if (expr === null) return true;
+                if (expr === undefined) {
+                    return undefined;
+                }
+                if (expr === null) {
+                    return true;
+                }
 
                 var res = calc(expr, r, context);
                 if (res === undefined) {
@@ -407,7 +412,7 @@
             };
 
             f.myName = 'isNull';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 return formatter.isNull(expr, context);
@@ -425,8 +430,12 @@
         function isNotNull(expr1) {
             var expr = autofield(expr1);
             var f = function(r, context) {
-                if (expr === undefined) return undefined;
-                if (expr === null) return false;
+                if (expr === undefined) {
+                    return undefined;
+                }
+                if (expr === null) {
+                    return false;
+                }
                 var res = calc(expr, r, context);
                 if (res === undefined) {
                     return undefined;
@@ -435,7 +444,7 @@
             };
 
             f.myName = 'isNotNull';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -465,7 +474,7 @@
             };
 
             f.myName = 'minus';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -494,7 +503,7 @@
             };
 
             f.myName = 'not';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 return formatter.not(expr, context);
@@ -516,7 +525,7 @@
                     if (v1 === undefined) {
                         return undefined;
                     }
-                    if (v1 == null) {
+                    if (v1 === null) {
                         return false;
                     }
                     v2 = calc(nbit, r, context);
@@ -533,7 +542,7 @@
             };
 
             f.myName = 'bitSet';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -573,7 +582,7 @@
             };
 
             f.myName = 'bitClear';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -622,7 +631,7 @@
             };
 
             f.myName = 'testMask';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -671,7 +680,7 @@
             };
 
             f.myName = 'between';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -714,7 +723,7 @@
             };
 
             f.myName = 'like';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -773,7 +782,7 @@
             };
 
             f.myName = 'distinct';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -786,7 +795,7 @@
         /**
          * checks if expr1 is in the array list
          * @method isIn
-         * @param {sqlfFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
          * @param {(sqlFun|object)[]} list  Array or function that evaluates into an array
          * @returns {sqlFun}
          */
@@ -815,7 +824,7 @@
             };
 
             f.myName = 'isIn';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -871,7 +880,7 @@
             };
 
             f.myName = 'eq';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 return formatter.eq(expr, expr2, context);
@@ -904,7 +913,7 @@
             };
 
             f.myName = 'ne';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 return formatter.ne(expr, expr2, context);
@@ -944,7 +953,7 @@
             };
 
             f.myName = 'lt';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 return formatter.lt(expr, expr2, context);
@@ -984,7 +993,7 @@
             };
 
             f.myName = 'le';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -1025,7 +1034,7 @@
             };
 
             f.myName = 'gt';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 return formatter.gt(expr, expr2, context);
@@ -1066,7 +1075,7 @@
             };
 
             f.myName = 'ge';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -1140,7 +1149,7 @@
             };
 
             f.myName = 'or';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function (formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -1181,7 +1190,7 @@
             };
 
             f.myName = 'coalesce';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -1293,7 +1302,7 @@
             };
 
             f.myName = 'max';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             f.grouping = true;
             var toSql = function(formatter, context) {
@@ -1341,7 +1350,7 @@
             };
 
             f.myName = 'min';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             f.grouping = true;
             var toSql = function(formatter, context) {
@@ -1397,7 +1406,7 @@
             };
 
             f.myName = 'substring';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 return formatter.substring(expr, start, len, context);
@@ -1431,7 +1440,7 @@
             };
 
             f.myName = 'convertToInt';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -1444,7 +1453,7 @@
          * Converts a generic expression into a string
          * @method convertToString
          * @param {sqlFun|string|object} expr1
-         * @param {sqlFun|object} maxLen maximum string len
+         * @param {int} maxLen maximum string len
          * @returns {sqlFun}
          */
         function convertToString(expr1, maxLen) {
@@ -1467,7 +1476,7 @@
             };
 
             f.myName = 'convertToString';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -1537,7 +1546,7 @@
             };
 
             f.myName = 'and';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -1608,7 +1617,7 @@
             };
 
             f.myName = 'mcmp';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 var k, v;
@@ -1687,12 +1696,7 @@
                     exprArr.push(isNull(field(k, alias)));
                     return;
                 }
-                if (_.isString(myValues[k])) {
-                    exprArr.push(like(field(k, alias), myValues[k]));
-
-                } else {
-                    exprArr.push(eq(field(k, alias), myValues[k]));
-                }
+                exprArr.push(eq(field(k, alias), myValues[k]));
             });
             return and(exprArr);
         }
@@ -1733,7 +1737,7 @@
             };
 
             f.myName = 'sub';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 return formatter.sub(expr, expr2, context);
@@ -1777,7 +1781,7 @@
             };
 
             f.myName = 'div';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 //noinspection JSUnresolvedFunction
@@ -1821,7 +1825,7 @@
             };
 
             f.myName = 'add';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 return formatter.add(a, context);
@@ -1864,7 +1868,7 @@
             };
 
             f.myName = 'concat';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
                 return formatter.concat(a, context);
@@ -1915,7 +1919,7 @@
             };
 
             f.myName = 'sum';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             f.grouping = true;
             var toSql = function(formatter, context) {
@@ -1968,10 +1972,10 @@
             };
 
             f.myName = 'mul';
-			f.myArguments = arguments;
+            f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
-                return formatter.add(_.map(a, function(v) {
+                return formatter.mul(_.map(a, function(v) {
                     //noinspection JSUnresolvedFunction
                     return formatter.toSql(v, context);
                 }));
