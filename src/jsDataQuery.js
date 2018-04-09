@@ -2001,17 +2001,17 @@
                     return toObject(arg);
                 });
 
-                return { 'name': name, 'args': args };
+                return { name: name, args: args, alias:obj.alias };
             }
 
             if (_.isArray(obj)) {
                 var arr = _.map(obj, function(item) {
                     return toObject(item);
                 });
-                return { 'array': arr };
+                return { array: arr };
             }
 
-            return { 'value': obj };
+            return { value: obj };
         }
 
         /**
@@ -2041,7 +2041,9 @@
                 });
 
                 var f = dataQuery[name];
-                return f.apply(this, args);
+                var result= f.apply(this, args);
+                result.alias = obj.alias;
+                return result;
             }
 
             return null;
