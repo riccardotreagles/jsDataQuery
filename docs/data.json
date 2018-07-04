@@ -1,0 +1,1552 @@
+{
+    "project": {
+        "name": "jsDataQuery",
+        "linkNatives": "true",
+        "description": "Query functions convertable into sql expressions",
+        "version": "1.0.1",
+        "url": "https://github.com/gaelazzo/jsDataQuery#readme"
+    },
+    "files": {
+        "src\\jsDataQuery.js": {
+            "name": "src\\jsDataQuery.js",
+            "modules": {
+                "jsDataQuery": 1
+            },
+            "classes": {
+                "sqlFun": 1,
+                "jsDataQuery": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "jsDataQuery": {
+            "name": "jsDataQuery",
+            "submodules": {},
+            "elements": {},
+            "classes": {
+                "sqlFun": 1,
+                "jsDataQuery": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "src\\jsDataQuery.js",
+            "line": 160,
+            "description": "Provides utility functions to filter data and to create sql condition over database.\nEvery function returns a function f where:\nf ( r, context )  = true if r matches condition in the given context\nf( r, context ) = result  evaluated in the given context if f is a computation function\nf.isTrue = true if f is always true\nf.isFalse = true if f is always false\nf ( r, context) = undefined if there is no sufficient data to evaluate f\nnull fields and undefined fields are all considered (and returned) as null values (so they compare equal)\nf.toSql(formatter, context)  = a string representing the underlying condition to be applied to a database.\n formatter is used to obtain details about making the expression, see sqlFormatter for an example\n [context] is the context into which the expression have to be evaluated"
+        }
+    },
+    "classes": {
+        "sqlFun": {
+            "name": "sqlFun",
+            "shortname": "sqlFun",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "jsDataQuery",
+            "namespace": "",
+            "file": "src\\jsDataQuery.js",
+            "line": 95,
+            "description": "Function with ability to be converted to sql. When invoked gives a result depending on the arguments.",
+            "access": "public",
+            "tagname": "",
+            "is_constructor": 1
+        },
+        "jsDataQuery": {
+            "name": "jsDataQuery",
+            "shortname": "jsDataQuery",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "jsDataQuery",
+            "namespace": "",
+            "file": "src\\jsDataQuery.js",
+            "line": 160,
+            "description": "Compare function provider to help building conditions that can be applyed both to collections,\n using the returned function as a filter, or to a database, using the toSql() method",
+            "access": "public",
+            "tagname": ""
+        }
+    },
+    "elements": {},
+    "classitems": [
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 9,
+            "class": "sqlFun"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 12,
+            "description": "Escapes special characters in a string",
+            "itemtype": "method",
+            "name": "myRegExpEscape",
+            "access": "private",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "str",
+                    "description": "the string to be escaped"
+                }
+            ],
+            "return": {
+                "description": "escaped string",
+                "type": "String"
+            },
+            "class": "sqlFun"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 46,
+            "class": "sqlFun"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 52,
+            "description": "Used as a reference to the global object. (thanks lodash)\n\nThe `this` value is used if it is the global object to avoid Greasemonkey's\nrestricted `window` object, otherwise the `window` object is used.",
+            "class": "sqlFun"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 60,
+            "class": "sqlFun"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 63,
+            "class": "sqlFun"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 66,
+            "class": "sqlFun"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 72,
+            "class": "sqlFun"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 102,
+            "description": "constant true if it is a constant expression, false otherwise",
+            "itemtype": "property",
+            "name": "constant",
+            "access": "public",
+            "tagname": "",
+            "type": "boolean",
+            "class": "sqlFun",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 110,
+            "description": "name of this field in the select result",
+            "itemtype": "property",
+            "name": "fieldName",
+            "access": "public",
+            "tagname": "",
+            "type": "string",
+            "class": "sqlFun",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 118,
+            "description": "Converts a SqlFun into a string",
+            "itemtype": "method",
+            "name": "toSql",
+            "access": "public",
+            "tagname": "",
+            "params": [
+                {
+                    "name": "formatter",
+                    "description": "used to obtain details about making the expression,\n     see sqlFormatter for an example",
+                    "type": "SqlFormatter"
+                },
+                {
+                    "name": "context",
+                    "description": "is the context into which the expression have to be evaluated",
+                    "type": "Environment"
+                }
+            ],
+            "return": {
+                "description": "//the sql representation of the expression",
+                "type": "String"
+            },
+            "class": "sqlFun",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 131,
+            "description": "true if the function is the true constant",
+            "itemtype": "property",
+            "name": "isTrue",
+            "access": "public",
+            "tagname": "",
+            "type": "boolean",
+            "class": "sqlFun",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 139,
+            "description": "true if the function is the false constant",
+            "itemtype": "property",
+            "name": "isFalse",
+            "access": "public",
+            "tagname": "",
+            "type": "boolean",
+            "class": "sqlFun",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 147,
+            "description": "table to which this field has been taken in a select",
+            "itemtype": "property",
+            "name": "tableName",
+            "access": "public",
+            "tagname": "",
+            "type": "string",
+            "class": "sqlFun",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 167,
+            "description": "Check if an object is the null or undefined constant",
+            "itemtype": "method",
+            "name": "isNullOrUndefined",
+            "params": [
+                {
+                    "name": "o",
+                    "description": "",
+                    "type": "SqlFun|undefined|null|object"
+                }
+            ],
+            "return": {
+                "description": "true if o is null or undefined",
+                "type": "Boolean"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 178,
+            "access": "private",
+            "tagname": "Adds some useful methods and properties to a function in order to transform it into a sqlFun",
+            "itemtype": "method",
+            "name": "toSqlFun",
+            "params": [
+                {
+                    "name": "f",
+                    "description": "",
+                    "type": "Function"
+                },
+                {
+                    "name": "toSql",
+                    "description": "",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 195,
+            "description": "Establish the output name for an expression",
+            "itemtype": "method",
+            "name": "as",
+            "params": [
+                {
+                    "name": "fieldName",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 212,
+            "description": "Transforms a generic function into a sqlFun, returning a similar function with some additional methods",
+            "itemtype": "method",
+            "name": "context",
+            "params": [
+                {
+                    "name": "environmentVariable",
+                    "description": "Environment variable name",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "example": [
+                " if environment = {a:1, b:2} and environmentFunction = function (env){return env.a}\n  context(environmentFunction) applied to environment will return 1"
+            ],
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 246,
+            "description": "Gets a field from an object. This is a very important function to distinguish between generic strings and\n field names.",
+            "itemtype": "method",
+            "name": "field",
+            "params": [
+                {
+                    "name": "fieldName",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "tableName",
+                    "description": "",
+                    "type": "String",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "f such that\n f(r) = r[fieldName]\n f.toSql() = 'fieldName' or 'tableName.fieldName' where tableName is specified",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 287,
+            "access": "private",
+            "tagname": "transform strings into fields, leaves other things unchanged\nFor example 'a' becomes f(r)-> r['a'],\n 12 is returned unchanged,\n a function is returned  unchanged",
+            "itemtype": "method",
+            "name": "autofield",
+            "params": [
+                {
+                    "name": "p",
+                    "description": "",
+                    "type": "SqlFun|string|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 305,
+            "description": "Defines a constant function. The toSql method invokes the formatter.quote function",
+            "itemtype": "method",
+            "name": "constant",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "is a literal",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "f such that f()= k, f.toSql()= formatter.quote(k)",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 359,
+            "description": "Evaluates an expression in a given context",
+            "itemtype": "method",
+            "name": "calc",
+            "params": [
+                {
+                    "name": "expr",
+                    "description": "function representing a generic expression"
+                },
+                {
+                    "name": "r",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "context",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "expr evaluated in the context r\n undefined are returned as null constant",
+                "type": "Object|string|null|undefined"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 390,
+            "description": "Check if an expression evaluates to null",
+            "itemtype": "method",
+            "name": "isNull",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "",
+                    "type": "SqlFun|string|object"
+                }
+            ],
+            "return": {
+                "description": "f where f(expr) = true if expr evaluates to null\n f.toSql() = something like '(EXPR is null)' where EXPR is the sql representation of the given expr",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 423,
+            "description": "Check if an expression does not evaluate to null",
+            "itemtype": "method",
+            "name": "isNotNull",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "",
+                    "type": "SqlFun|string|object"
+                }
+            ],
+            "return": {
+                "description": "f where f(expr) = true if expr does not evaluate to null\n f.toSql() = something like '(EXPR is not null)' where EXPR is the sql representation of the given expr",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 458,
+            "itemtype": "method",
+            "name": "minus",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "",
+                    "type": "SqlFun|string|object"
+                }
+            ],
+            "return": {
+                "description": "f where f(r) = - r. r should evaluate into a number",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 487,
+            "itemtype": "method",
+            "name": "not",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "",
+                    "type": "SqlFun|string|object"
+                }
+            ],
+            "return": {
+                "description": "f where f(r) = not r. r should evaluate into a boolean",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 514,
+            "description": "Check if the nth bit of expression is set",
+            "itemtype": "method",
+            "name": "bitSet",
+            "params": [
+                {
+                    "name": "expression",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "nbit",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 554,
+            "description": "Check if the nth bit of expression is not set",
+            "itemtype": "method",
+            "name": "bitClear",
+            "params": [
+                {
+                    "name": "expression",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string"
+                },
+                {
+                    "name": "nbit",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 594,
+            "description": "check if expr1 & mask === val & mask",
+            "itemtype": "method",
+            "name": "testMask",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string"
+                },
+                {
+                    "name": "mask",
+                    "description": "",
+                    "type": "SqlFun|object"
+                },
+                {
+                    "name": "val",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 644,
+            "description": "Check if expr1 evaluates between min and max",
+            "itemtype": "method",
+            "name": "between",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "min",
+                    "description": "",
+                    "type": "SqlFun|object"
+                },
+                {
+                    "name": "max",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 692,
+            "description": "Checks if expr1 is (sql-like) mask, where mask can contain * and _ characters",
+            "itemtype": "method",
+            "name": "like",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "expr1 note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "mask",
+                    "description": "mask is a string or a function that evaluates into a string",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "example": [
+                " like('a','s%') compiles into (a like 's%')\n       like(const('a'),'s%') compiles into ('a' like 's%')"
+            ],
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 735,
+            "description": "Finds distinct values of a field",
+            "itemtype": "method",
+            "name": "distinctVal",
+            "params": [
+                {
+                    "name": "arr",
+                    "description": "",
+                    "type": "Object[]"
+                },
+                {
+                    "name": "fieldname",
+                    "description": ""
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Object[]|undefined"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 752,
+            "description": "Finds distinct values of a list of fields",
+            "itemtype": "method",
+            "name": "distinctVal",
+            "params": [
+                {
+                    "name": "exprList",
+                    "description": "",
+                    "type": "(sqlFun|object)[]"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 795,
+            "description": "checks if expr1 is in the array list",
+            "itemtype": "method",
+            "name": "isIn",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "list",
+                    "description": "Array or function that evaluates into an array",
+                    "type": "(sqlFun|object)[]"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 836,
+            "description": "checks if expr1 is not in the array list",
+            "itemtype": "method",
+            "name": "isNotIn",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "list",
+                    "description": "{Array} Array or function that evaluates into an array",
+                    "type": "SqlFun[]|object[]"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 857,
+            "description": "checks if expr1 evaluates equal to expr2",
+            "itemtype": "method",
+            "name": "eq",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "expr2",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 891,
+            "description": "checks if expr1 evaluates different from expr2",
+            "itemtype": "method",
+            "name": "ne",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "expr2",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 925,
+            "description": "checks if expr1 evaluates less than from expr2",
+            "itemtype": "method",
+            "name": "lt",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "expr2",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 964,
+            "description": "checks if expr1 evaluates less than or equal to from expr2",
+            "itemtype": "method",
+            "name": "le",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "expr2",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1005,
+            "description": "checks if expr1 evaluates greater than expr2",
+            "itemtype": "method",
+            "name": "gt",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "expr2",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1045,
+            "description": "checks if expr1 evaluates greater than or equal to expr2",
+            "itemtype": "method",
+            "name": "ge",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "expr2",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1087,
+            "description": "checks if at least one of supplied expression evaluates to a truthy value",
+            "itemtype": "method",
+            "name": "or",
+            "params": [
+                {
+                    "name": "arr",
+                    "description": "array or list of expression",
+                    "type": "SqlFun[]|object[]"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1164,
+            "description": "return the first object not null in the  array parameter",
+            "params": [
+                {
+                    "name": "arr",
+                    "description": "",
+                    "type": "SqlFun[]|object[]"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1206,
+            "description": "checks if expr1 is null or equal to expr2",
+            "itemtype": "method",
+            "name": "isNullOrEq",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "expr2",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1218,
+            "description": "checks if expr1 is null or greater than expr2",
+            "itemtype": "method",
+            "name": "isNullOrGt",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "expr2",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1230,
+            "description": "checks if expr1 is null or greater than or equal to expr2",
+            "itemtype": "method",
+            "name": "isNullOrGe",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it"
+                },
+                {
+                    "name": "expr2",
+                    "description": ""
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1242,
+            "description": "checks if expr1 is null or less than expr2",
+            "itemtype": "method",
+            "name": "isNullOrLt",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "expr2",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1254,
+            "description": "checks if expr1 is null or less than or equal to expr2",
+            "itemtype": "method",
+            "name": "isNullOrLe",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "expr2",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1266,
+            "description": "Evaluates the maximum value of an expression in a table. If any undefined is found, return undefined.\nNull are skipped. If all is null return null",
+            "itemtype": "method",
+            "name": "max",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "",
+                    "type": "SqlFun|string|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1314,
+            "description": "Evaluates the minimum value of an expression in a table. If any undefined is found, return undefined.\nNull are skipped. If all is null return null",
+            "itemtype": "method",
+            "name": "min",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "",
+                    "type": "SqlFun|string|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1363,
+            "itemtype": "method",
+            "name": "substring",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "start",
+                    "description": "",
+                    "type": "SqlFun|object"
+                },
+                {
+                    "name": "len",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1417,
+            "description": "Converts a generic expression into an integer",
+            "itemtype": "method",
+            "name": "convertToInt",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "",
+                    "type": "SqlFun|string|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1452,
+            "description": "Converts a generic expression into a string",
+            "itemtype": "method",
+            "name": "convertToString",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "maxLen",
+                    "description": "maximum string len",
+                    "type": "Int"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1488,
+            "description": "checks if all supplied expression evaluate to truthy values",
+            "itemtype": "method",
+            "name": "and",
+            "params": [
+                {
+                    "name": "arr",
+                    "description": "array or list of expression",
+                    "type": "SqlFun[]|object[]"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1563,
+            "description": "Compares a set of keys of an object with an array of values or with fields of another object\n values can be an array or an object",
+            "itemtype": "method",
+            "name": "mcmp",
+            "params": [
+                {
+                    "name": "keys",
+                    "description": "",
+                    "type": "String[]|object[]"
+                },
+                {
+                    "name": "values",
+                    "description": "",
+                    "type": "SqlFun[]|object[]"
+                },
+                {
+                    "name": "alias",
+                    "description": "",
+                    "type": "String",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "f(r) = true if :\n case values is an array: r[keys[i]] = values[i] for each i=0..keys.length-1\n case values is an object: r[keys[i]] = values[keys[i]] for each i=0..keys.length-1",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1643,
+            "description": "Compares a set of keys of an object with an array of values or with fields of another object",
+            "itemtype": "method",
+            "name": "mcmpLike",
+            "params": [
+                {
+                    "name": "example",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "alias",
+                    "description": "eventually table alias to use in conjunction with example field names",
+                    "type": "String",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "f(r) = true if  for each non empty field of r:\n case field is a string containing a %:  field LIKE example[field]\n otherwise: field = example[field]",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1674,
+            "description": "Compares a set of keys of an object with an array of values or with fields of another object",
+            "itemtype": "method",
+            "name": "mcmpEq",
+            "params": [
+                {
+                    "name": "example",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "alias",
+                    "description": "",
+                    "type": "String",
+                    "optional": true
+                }
+            ],
+            "return": {
+                "description": "f(r) = true if  for each non empty field of r:\n case field is null :    field is null\n otherwise: r[field] = example[field]",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1704,
+            "description": "returns a functions that does a subtraction",
+            "itemtype": "method",
+            "name": "sub",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "expr2",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1749,
+            "description": "returns a functions that does a division",
+            "itemtype": "method",
+            "name": "div",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "expr2",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1793,
+            "description": "returns a functions that evaluates the sum of a list or array of values given when it is CREATED",
+            "itemtype": "method",
+            "name": "add",
+            "params": [
+                {
+                    "name": "values",
+                    "description": "",
+                    "type": "SqlFun[]|object[]"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1836,
+            "description": "returns a functions that evaluates the concatenation of a list or array of strings given when it is CREATED",
+            "itemtype": "method",
+            "name": "concat",
+            "params": [
+                {
+                    "name": "values",
+                    "description": "",
+                    "type": "SqlFun[]|object[]"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1880,
+            "description": "Evaluates the sum of an array of element given at run time",
+            "itemtype": "method",
+            "name": "sum",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "",
+                    "type": "SqlFun|string|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1933,
+            "description": "returns a functions that evaluates the multiply of a list or array of values\nIf some operand is 0, returns the always 0 function",
+            "itemtype": "method",
+            "name": "mul",
+            "params": [
+                {
+                    "name": "values",
+                    "description": "",
+                    "type": "SqlFun[]|object[]"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 1992,
+            "description": "Converts a sqlFun to an plain object.",
+            "params": [
+                {
+                    "name": "obj",
+                    "description": "",
+                    "type": "SqlFun|sqlFun[]|object|object[]"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Object"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 2017,
+            "description": "Converts an object back to a sqlFun",
+            "params": [
+                {
+                    "name": "obj",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun|sqlFun[]|object|object[]"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        }
+    ],
+    "warnings": [
+        {
+            "message": "replacing incorrect tag: function with method",
+            "line": " src\\jsDataQuery.js:212"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:644"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:692"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:735"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:752"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:795"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:836"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:857"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:891"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:925"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:964"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:1005"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:1045"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:1087"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:1164"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:1218"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:1254"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:1266"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:1314"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:1363"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:1417"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:1452"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:1880"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:1992"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src\\jsDataQuery.js:2017"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src\\jsDataQuery.js:9"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src\\jsDataQuery.js:46"
+        },
+        {
+            "message": "Missing item type\nUsed as a reference to the global object. (thanks lodash)\n\nThe `this` value is used if it is the global object to avoid Greasemonkey's\nrestricted `window` object, otherwise the `window` object is used.",
+            "line": " src\\jsDataQuery.js:52"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src\\jsDataQuery.js:60"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src\\jsDataQuery.js:63"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src\\jsDataQuery.js:66"
+        },
+        {
+            "message": "Missing item type",
+            "line": " src\\jsDataQuery.js:72"
+        },
+        {
+            "message": "Missing item type\nreturn the first object not null in the  array parameter",
+            "line": " src\\jsDataQuery.js:1164"
+        },
+        {
+            "message": "Missing item type\nConverts a sqlFun to an plain object.",
+            "line": " src\\jsDataQuery.js:1992"
+        },
+        {
+            "message": "Missing item type\nConverts an object back to a sqlFun",
+            "line": " src\\jsDataQuery.js:2017"
+        }
+    ]
+}

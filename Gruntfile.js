@@ -32,7 +32,7 @@ module.exports = function (grunt) {
                     url: '<%= pkg.homepage %>',
                     options: {
                         paths: ['./src'],
-                        outdir: 'doc'
+                        outdir: 'docs'
                     }
                 }
             },

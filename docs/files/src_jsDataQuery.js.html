@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src\jsDataQuery.js - jsDataQuery</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="jsDataQuery" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.0.1</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/jsDataQuery.html">jsDataQuery</a></li>
+                                <li><a href="../classes/sqlFun.html">sqlFun</a></li>
+                            </ul>
+                
+                
+                            <ul id="api-modules" class="apis modules">
+                                <li><a href="../modules/jsDataQuery.html">jsDataQuery</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: src\jsDataQuery.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/*globals sqlFormatter,define,quote,global,module,exports */
+/*jslint nomen: true*/
+/*jslint bitwise: true */
+
+;
+&#x27;use strict&#x27;;
+
+(function(_) {
+        /** Used as a safe reference for &#x60;undefined&#x60; in pre-ES5 environments. (thanks lodash)*/
+        var undefined;
+
+        /**
+         * Escapes special characters in a string
+         * @method myRegExpEscape
+         * @private
+         * @param str the string to be escaped
+         * @return {String} escaped string
+         */
+        var myRegExpEscape = function(str) {
+            return str.replace(/([.*+?\^=!:${}()|\[\]\/\\])/g, &#x27;\\$1&#x27;); // str.replace(/([.*+?^=!:${}()|[\]\/\\])/g, &#x27;\\$1&#x27;);
+        };
+
+        if (!Function.prototype.bind) {
+            Function.prototype.bind = function(oThis) {
+                if (typeof this !== &quot;function&quot;) {
+                    // closest thing possible to the ECMAScript 5 internal IsCallable function
+                    throw new TypeError(&quot;Function.prototype.bind - what is trying to be bound is not callable&quot;);
+                }
+
+                var aArgs = Array.prototype.slice.call(arguments, 1),
+                    fToBind = this,
+                    FNOP = function() {
+                    },
+                    fBound = function() {
+                        return fToBind.apply(this instanceof FNOP &amp;&amp; oThis ? this : oThis,
+                            aArgs.concat(Array.prototype.slice.call(arguments)));
+                    };
+
+                FNOP.prototype = this.prototype;
+                fBound.prototype = new FNOP();
+
+                return fBound;
+            };
+        }
+
+        /** Used to determine if values are of the language type &#x60;Object&#x60;. (thanks lodash)*/
+        var objectTypes = {
+            &#x27;function&#x27;: true,
+            &#x27;object&#x27;: true
+        };
+
+        /**
+         * Used as a reference to the global object. (thanks lodash)
+         *
+         * The &#x60;this&#x60; value is used if it is the global object to avoid Greasemonkey&#x27;s
+         * restricted &#x60;window&#x60; object, otherwise the &#x60;window&#x60; object is used.
+         */
+        var root = (objectTypes[typeof window] &amp;&amp; window !== (this &amp;&amp; this.window)) ? window : this;
+
+        /** Detect free variable &#x60;exports&#x60;. (thanks lodash) */
+        var freeExports = objectTypes[typeof exports] &amp;&amp; exports &amp;&amp; !exports.nodeType &amp;&amp; exports;
+
+        /** Detect free variable &#x60;module&#x60;. (thanks lodash)*/
+        var freeModule = objectTypes[typeof module] &amp;&amp; module &amp;&amp; !module.nodeType &amp;&amp; module;
+
+        /** Detect free variable &#x60;global&#x60; from Node.js or Browserified code and use it as &#x60;root&#x60;. (thanks lodash)*/
+        var freeGlobal = freeExports &amp;&amp; freeModule &amp;&amp; typeof global === &#x27;object&#x27; &amp;&amp; global;
+        if (freeGlobal &amp;&amp; (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal || freeGlobal.self === freeGlobal)) {
+            root = freeGlobal;
+        }
+
+        /** Detect the popular CommonJS extension &#x60;module.exports&#x60;. Thanks lodash */
+        var moduleExports = freeModule &amp;&amp; freeModule.exports === freeExports &amp;&amp; freeExports;
+
+
+        function isAngularField(f) {
+            return (f.substr(0, 2) === &#x27;$$&#x27;);
+        }
+
+        /**
+         * Provides utility functions to filter data and to create sql condition over database.
+         * Every function returns a function f where:
+         * f ( r, context )  = true if r matches condition in the given context
+         * f( r, context ) = result  evaluated in the given context if f is a computation function
+         * f.isTrue = true if f is always true
+         * f.isFalse = true if f is always false
+         * f ( r, context) = undefined if there is no sufficient data to evaluate f
+         * null fields and undefined fields are all considered (and returned) as null values (so they compare equal)
+         * f.toSql(formatter, context)  = a string representing the underlying condition to be applied to a database.
+         *  formatter is used to obtain details about making the expression, see sqlFormatter for an example
+         *  [context] is the context into which the expression have to be evaluated
+         *  @module jsDataQuery
+         */
+
+        /**
+         * Function with ability to be converted to sql. When invoked gives a result depending on the arguments.
+         * @class sqlFun
+         * @public
+         * @constructor
+         */
+        function sqlFun(){
+            /**
+             * constant true if it is a constant expression, false otherwise
+             * @property constant
+             * @public
+             * @type boolean
+             */
+            this.constant = false;
+
+            /**
+             * name of this field in the select result
+             * @property fieldName
+             * @public
+             * @type string
+             **/
+            this.fieldName= &#x27;dummy&#x27;;
+
+            /**
+             * Converts a SqlFun into a string
+             * @method toSql
+             * @public
+             * @param {sqlFormatter} formatter  used to obtain details about making the expression,
+             *      see sqlFormatter for an example
+             * @param {Environment} context  is the context into which the expression have to be evaluated
+             * @return {string} //the sql representation of the expression
+             */
+            this.toSql= function(sqlFormatter, context){
+
+            };
+
+            /**
+             * true if the function is the true constant
+             * @property isTrue
+             * @public
+             * @type boolean
+             **/
+            this.isTrue = false;
+
+            /**
+             * true if the function is the false constant
+             * @property isFalse
+             * @public
+             * @type boolean
+             **/
+            this.isFalse= false;
+
+            /**
+             *  table to which this field has been taken in a select
+             * @property  tableName
+             * @public
+             * @type string
+             */
+            this.tableName= &#x27;dummy&#x27;;
+        }
+
+
+
+
+
+        /**
+         * Compare function provider to help building conditions that can be applyed both to collections,
+         *  using the returned function as a filter, or to a database, using the toSql() method
+         *  @class jsDataQuery
+         *  @public
+         */
+
+        /**
+         * Check if an object is the null or undefined constant
+         * @method isNullOrUndefined
+         * @param {sqlFun|undefined|null|object} o
+         * @return {boolean} true if o is null or undefined
+         */
+        function isNullOrUndefined(o) {
+            return _.isUndefined(o) || _.isNull(o);
+        }
+
+
+        /**
+         * @private
+         * Adds some useful methods and properties to a function in order to transform it into a sqlFun
+         * @method toSqlFun
+         * @param {function} f
+         * @param {function} toSql
+         * @return {sqlFun}
+         */
+        function toSqlFun(f, toSql) {
+            var tryInvoke = f();
+            if (tryInvoke !== undefined) {
+                //noinspection JSValidateTypes
+                f = constant(tryInvoke);
+            } else {
+                f.constant = false;
+                f.toSql = toSql;
+            }
+            /**
+             * Establish the output name for an expression
+             * @method as
+             * @param {string} fieldName
+             * @return {sqlFun}
+             */
+            f.as = function(fieldName){
+                f.fieldName= fieldName;
+                //noinspection JSValidateTypes
+                return f;
+            };
+            //noinspection JSValidateTypes
+            return f;
+        }
+
+
+
+        /**
+         * Transforms a generic function into a sqlFun, returning a similar function with some additional methods
+         * @function context
+         * @param {string} environmentVariable  Environment variable name
+         * @return {sqlFun}
+         * @example if environment = {a:1, b:2} and environmentFunction = function (env){return env.a}
+         *   context(environmentFunction) applied to environment will return 1
+         */
+        function context(environmentVariable) {
+            var f = function(environment) {
+                if (environment === undefined) {
+                    return undefined;
+                }
+                return environment[environmentVariable];
+            };
+            f.toSql = function(formatter, environment) {
+                //noinspection JSUnresolvedFunction
+                return formatter.quote(environment[environmentVariable]);
+            };
+            f.as = function(fieldName){
+                f.fieldName= fieldName;
+                return f;
+            };
+            f.constant = false;
+            f.toString = function() {
+                return &#x27;context(&#x27; + environmentVariable + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;context&#x27;;
+            f.myArguments = arguments;
+
+            return f;
+        }
+
+        /**
+         * Gets a field from an object. This is a very important function to distinguish between generic strings and
+         *  field names.
+         * @method field
+         * @param {string} fieldName
+         * @param {string} [tableName]
+         * @return {sqlFun} f such that
+         *  f(r) = r[fieldName]
+         *  f.toSql() = &#x27;fieldName&#x27; or &#x27;tableName.fieldName&#x27; where tableName is specified
+         *
+         */
+        function field(fieldName, tableName) {
+            var f = function(r) {
+                if (isNullOrUndefined(r)) {
+                    return undefined;
+                }
+                if (r.hasOwnProperty(fieldName)) {
+                    return r[fieldName];
+                }
+                return null;
+            };
+            f.tableName = tableName;
+            f.fieldName = fieldName;
+            f.toString = function() {
+                if (tableName) {
+                    return tableName+&#x27;.&#x27;+fieldName;
+                }
+                return fieldName;
+            };
+            var toSql = function(formatter) {
+                //noinspection JSUnresolvedFunction
+                return formatter.field(fieldName, tableName);
+            };
+
+            f.myName = &#x27;field&#x27;;
+            f.myArguments = arguments;
+
+            return toSqlFun(f, toSql);
+        }
+
+
+        /**
+         * @private
+         * transform strings into fields, leaves other things unchanged
+         * For example &#x27;a&#x27; becomes f(r)-&gt; r[&#x27;a&#x27;],
+         *  12 is returned unchanged,
+         *  a function is returned  unchanged
+         * @method autofield
+         * @param {sqlFun|string|object} p
+         * @return {sqlFun}
+         */
+        function autofield(p) {
+            if (_.isString(p)) {
+                return field(p); //p is considered a field name
+            }
+            return p;
+        }
+
+
+        /**
+         * Defines a constant function. The toSql method invokes the formatter.quote function
+         * @method constant
+         * @param {object} value is a literal
+         * @return {sqlFun} f such that f()= k, f.toSql()= formatter.quote(k)
+         */
+        function constant(value) {
+            var k = value;
+            if (k === undefined) {
+                k = null;
+            }
+            var f = function() {
+                return k;
+            };
+            f.toString = function() {
+                return &#x27;constant(&#x27; + k.toString() + &#x27;)&#x27;;
+            };
+            f.constant = true;
+            f.as = function(fieldName){
+                f.fieldName= fieldName;
+                return f;
+            };
+
+            f.myName = &#x27;constant&#x27;;
+            f.myArguments = arguments;
+
+            if (k === true) {
+                f.isTrue = true;
+                f.toSql = function(formatter) {
+                    return formatter.eq(1, 1);
+                };
+                return f;
+            }
+
+            if (k === false) {
+                f.isFalse = true;
+                f.toSql = function(formatter) {
+                    return formatter.eq(1, 0);
+                };
+                return f;
+            }
+
+            /*
+             The .toSql method of a constant calls directly the quote method of the formatter. HERE is where the
+             tree top-down scan ends.
+             */
+            f.toSql = function(formatter) {
+                //noinspection JSUnresolvedFunction
+                return formatter.quote(k);
+            };
+            return f;
+        }
+
+
+        /**
+         * Evaluates an expression in a given context
+         * @method calc
+         * @param expr function representing a generic expression
+         * @param {object} r
+         * @param {object} context
+         * @return {Object|string|null|undefined} expr evaluated in the context r
+         *  undefined are returned as null constant
+         */
+        function calc(expr, r, context) {
+            if (isNullOrUndefined(expr)) {
+                return expr;
+            }
+            //if expr has .toSql extension, it can be directly evaluated with a simple invoke. If it is called with
+            // undefined, and it is not a constant, it must return undefined. In no other case undefined is
+            // allowed as return value from sqlFun invocation
+            //noinspection JSUnresolvedVariable
+            if (expr.toSql) {
+                return expr(r, context);
+            }
+            //if expr is an array, a new array is returned where each element is the evaluation of the
+            // corresponding element in the original array
+            if (_.isArray(expr)) {
+                return _.map(expr, function(el) {
+                    return calc(el, r, context);
+                });
+            }
+            //any other object is returned as is
+            return expr;
+        }
+
+        /**
+         * Check if an expression evaluates to null
+         * @method isNull
+         * @param {sqlFun|string|object} expr1
+         * @return {sqlFun} f where f(expr) = true if expr evaluates to null
+         *  f.toSql() = something like &#x27;(EXPR is null)&#x27; where EXPR is the sql representation of the given expr
+         */
+        function isNull(expr1) {
+            var expr = autofield(expr1);
+            var f = function(r, context) {
+                if (expr === undefined) {
+                    return undefined;
+                }
+                if (expr === null) {
+                    return true;
+                }
+
+                var res = calc(expr, r, context);
+                if (res === undefined) {
+                    return undefined;
+                }
+                return (res === null);
+            };
+
+            f.myName = &#x27;isNull&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.isNull(expr, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * Check if an expression does not evaluate to null
+         * @method isNotNull
+         * @param {sqlFun|string|object} expr1
+         * @return {sqlFun} f where f(expr) = true if expr does not evaluate to null
+         *  f.toSql() = something like &#x27;(EXPR is not null)&#x27; where EXPR is the sql representation of the given expr
+         */
+        function isNotNull(expr1) {
+            var expr = autofield(expr1);
+            var f = function(r, context) {
+                if (expr === undefined) {
+                    return undefined;
+                }
+                if (expr === null) {
+                    return false;
+                }
+                var res = calc(expr, r, context);
+                if (res === undefined) {
+                    return undefined;
+                }
+                return (res !== null);
+            };
+
+            f.myName = &#x27;isNotNull&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.isNotNull(expr, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+
+
+        /**
+         * @method minus
+         * @param {sqlFun|string|object} expr1
+         * @return {sqlFun} f where f(r) = - r. r should evaluate into a number
+         */
+        function minus(expr1) {
+            var expr = autofield(expr1);
+            var f = function(r, context) {
+                var v1 = calc(expr, r, context);
+                if (isNullOrUndefined(v1)) {
+                    return v1;
+                }
+                return -v1;
+            };
+            f.toString = function() {
+                return &#x27;-&#x27; + expr.toString();
+            };
+
+            f.myName = &#x27;minus&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.minus(expr, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+
+        /**
+         * @method not
+         * @param {sqlFun|string|object} expr1
+         * @return {sqlFun} f where f(r) = not r. r should evaluate into a boolean
+         */
+        function not(expr1) {
+            var expr = autofield(expr1);
+            var f = function(r, context) {
+                var v1 = calc(expr, r, context);
+                if (isNullOrUndefined(v1)) {
+                    return v1;
+                }
+                return !v1;
+            };
+            f.toString = function() {
+                return &#x27;not(&#x27; + expr.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;not&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.not(expr, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * Check if the nth bit of expression is set
+         * @method bitSet
+         * @param {sqlFun|string|object}  expression note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} nbit
+         * @return {sqlFun}
+         */
+        function bitSet(expression, nbit) {
+            var expr = autofield(expression),
+                f = function(r, context) {
+                    var v1 = calc(expr, r, context), v2;
+                    if (v1 === undefined) {
+                        return undefined;
+                    }
+                    if (v1 === null) {
+                        return false;
+                    }
+                    v2 = calc(nbit, r, context);
+                    if (v2 === undefined) {
+                        return undefined;
+                    }
+                    if (v2 === null) {
+                        return false;
+                    }
+                    return (v1 &amp; (1 &lt;&lt; v2)) !== 0;
+                };
+            f.toString = function() {
+                return &#x27;bitSet(&#x27; + expr.toString() + &#x27;,&#x27; + nbit.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;bitSet&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.bitSet(expr, nbit, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * Check if the nth bit of expression is not set
+         * @method bitClear
+         * @param {sqlFun|string} expression note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} nbit
+         * @return {sqlFun}
+         */
+        function bitClear(expression, nbit) {
+            var expr = autofield(expression),
+                f = function(r, context) {
+                    var v1 = calc(expr, r, context), v2;
+                    if (v1 === undefined) {
+                        return undefined;
+                    }
+                    if (v1 === null) {
+                        return false;
+                    }
+                    v2 = calc(nbit, r, context);
+                    if (v2 === undefined) {
+                        return undefined;
+                    }
+                    if (v2 === null) {
+                        return false;
+                    }
+                    return (v1 &amp; (1 &lt;&lt; v2)) === 0;
+                };
+            f.toString = function() {
+                return &#x27;bitClear(&#x27; + expr.toString() + &#x27;,&#x27; + nbit.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;bitClear&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.bitClear(expr, nbit, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * check if expr1 &amp; mask === val &amp; mask
+         * @method testMask
+         * @param {sqlFun|string} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} mask
+         * @param {sqlFun|object} val
+         * @return {sqlFun}
+         */
+        function testMask(expr1, mask, val) {
+            var expr = autofield(expr1),
+                f = function(r, context) {
+                    var v1 = calc(expr, r, context), v2, v3;
+                    if (v1 === undefined) {
+                        return undefined;
+                    }
+                    if (v1 === null) {
+                        return false;
+                    }
+                    v2 = calc(mask, r, context);
+                    if (v2 === undefined) {
+                        return undefined;
+                    }
+                    if (v2 === null) {
+                        return false;
+                    }
+                    v3 = calc(val, r, context);
+                    if (v3 === undefined) {
+                        return undefined;
+                    }
+                    if (v3 === null) {
+                        return false;
+                    }
+                    return ((v1 &amp; v2) === (v3 &amp; v2));
+                };
+
+            f.toString = function() {
+                return &#x27;testMask(&#x27; + expr.toString() + &#x27;,&#x27; + mask.toString() + &#x27;,&#x27; + val.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;testMask&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.testMask(expr, mask, val, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+
+        /**
+         * Check if expr1 evaluates between min and max
+         * @method between
+         * @param {sqlFun|string|object} expr1  note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} min
+         * @param {sqlFun|object}  max
+         * @returns {sqlFun}
+         */
+        function between(expr1, min, max) {
+            var expr = autofield(expr1),
+                f = function(r, context) {
+                    var v1 = calc(expr, r, context), v2, v3;
+                    if (v1 === undefined) {
+                        return undefined;
+                    }
+                    if (v1 === null) {
+                        return false;
+                    }
+                    v2 = calc(min, r, context);
+                    if (v2 === undefined) {
+                        return undefined;
+                    }
+                    if (v2 === null) {
+                        return false;
+                    }
+                    v3 = calc(max, r, context);
+                    if (v3 === undefined) {
+                        return undefined;
+                    }
+                    if (v3 === null) {
+                        return false;
+                    }
+                    return (v1 &gt;= v2) &amp;&amp; (v1 &lt;= v3);
+                };
+            f.toString = function() {
+                return &#x27;between(&#x27; + expr.toString() + &#x27;,&#x27; + min.toString() + &#x27;,&#x27; + max.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;between&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.between(expr, min, max, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * Checks if expr1 is (sql-like) mask, where mask can contain * and _ characters
+         * @method like
+         * @param {sqlFun|string|object} expr1  expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} mask  mask is a string or a function that evaluates into a string
+         * @returns {sqlFun}
+         * @example like(&#x27;a&#x27;,&#x27;s%&#x27;) compiles into (a like &#x27;s%&#x27;)
+         *        like(const(&#x27;a&#x27;),&#x27;s%&#x27;) compiles into (&#x27;a&#x27; like &#x27;s%&#x27;)
+         */
+        function like(expr1, mask) {
+            var expr = autofield(expr1),
+                f = function(r, context) {
+                    var v1 = calc(expr, r, context), v2, likeExpr;
+                    if (v1 === undefined) {
+                        return undefined;
+                    }
+                    if (v1 === null) {
+                        return false;
+                    }
+                    v2 = calc(mask, r, context);
+                    if (v2 === undefined) {
+                        return undefined;
+                    }
+                    if (v2 === null) {
+                        return false;
+                    }
+                    likeExpr = myRegExpEscape(v2);
+                    return (new RegExp(likeExpr.replace(new RegExp(&#x27;%&#x27;, &#x27;g&#x27;), &quot;.*&quot;).replace(new RegExp(&#x27;_&#x27;, &#x27;g&#x27;), &quot;.&quot;)).exec(v1) !== null);
+                };
+            f.toString = function() {
+                return &#x27;like(&#x27; + expr.toString() + &#x27;,&#x27; + mask.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;like&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.like(expr, mask, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * Finds distinct values of a field
+         * @method distinctVal
+         * @param {object[]} arr
+         * @param fieldname
+         * @returns {object[]|undefined}
+         */
+        function distinctVal(arr, fieldname) {
+            if (arr === undefined) {
+                return undefined;
+            }
+            if (fieldname) {
+                return _.uniq(_.map(arr, fieldname));
+            }
+            return _.uniq(arr);
+        }
+
+        /**
+         * Finds distinct values of a list of fields
+         * @method distinctVal
+         * @param {(sqlFun|object)[]} exprList
+         * @returns {sqlFun}
+         */
+        function distinct(exprList) {
+            var f = function(arr, context) {
+                if (arr === undefined) {
+                    return undefined;
+                }
+                var someUndefined = false,
+                    res = _.map(arr, function(a) {
+                        return _.reduce(exprList, function(accumulator, expr) {
+                            var o = calc(expr, a, context);
+                            if (o === undefined) {
+                                someUndefined = true;
+                            }
+                            accumulator.push(o);
+                            return accumulator;
+
+                        }, []);
+                    });
+                if (someUndefined) {
+                    return undefined;
+                }
+                return _.uniq(res);
+            };
+            f.toString = function() {
+                return &#x27;distinct(&#x27; + arrayToString(exprList) + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;distinct&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.distinct(exprList, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+
+        /**
+         * checks if expr1 is in the array list
+         * @method isIn
+         * @param {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {(sqlFun|object)[]} list  Array or function that evaluates into an array
+         * @returns {sqlFun}
+         */
+        function isIn(expr1, list) {
+            var expr = autofield(expr1),
+                f = function(r, context) {
+                    var v = calc(expr, r, context), l;
+                    if (v === undefined) {
+                        return undefined;
+                    }
+                    if (v === null) {
+                        return false;
+                    }
+
+                    l = calc(list, r, context);
+                    if (l === undefined) {
+                        return undefined;
+                    }
+                    if (l === null) {
+                        return false;
+                    }
+                    return (_.indexOf(l, v) &gt;= 0);
+                };
+            f.toString = function() {
+                return &#x27;isIn(&#x27; + expr.toString() + &#x27;,&#x27; + arrayToString(list) + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;isIn&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.isIn(expr, list, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * checks if expr1 is not in the array list
+         * @method isNotIn
+         * @param {sqlFun|string|object}expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun[]|object[]} list {Array} Array or function that evaluates into an array
+         * @returns {sqlFun}
+         */
+        function isNotIn(expr1, list) {
+            return not(isIn(expr1, list));
+        }
+
+        function toString(o) {
+            if (o === undefined) {
+                return &#x27;undefined&#x27;;
+            }
+            if (o === null) {
+                return &#x27;null&#x27;;
+            }
+            return o.toString();
+        }
+
+        /**
+         * checks if expr1 evaluates equal to expr2
+         * @method eq
+         * @param {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} expr2
+         * @returns {sqlFun}
+         */
+        function eq(expr1, expr2) {
+            var expr = autofield(expr1),
+                f = function(r, context) {
+                    var v1 = calc(expr, r, context), v2;
+                    if (v1 === undefined) {
+                        return undefined;
+                    }
+                    v2 = calc(expr2, r, context);
+                    if (v2 === undefined) {
+                        return undefined;
+                    }
+                    return v1 === v2;
+                };
+
+            f.toString = function() {
+                return &#x27;eq(&#x27; + toString(expr) + &#x27;,&#x27; + toString(expr2) + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;eq&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.eq(expr, expr2, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * checks if expr1 evaluates different from expr2
+         * @method ne
+         * @param {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} expr2
+         * @returns {sqlFun}
+         */
+        function ne(expr1, expr2) {
+            var expr = autofield(expr1),
+                f = function(r, context) {
+                    var v1 = calc(expr, r, context), v2;
+                    if (v1 === undefined) {
+                        return undefined;
+                    }
+                    v2 = calc(expr2, r, context);
+                    if (v2 === undefined) {
+                        return undefined;
+                    }
+                    return v1 !== v2;
+                };
+            f.toString = function() {
+                return &#x27;ne(&#x27; + expr.toString() + &#x27;,&#x27; + expr2.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;ne&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.ne(expr, expr2, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+
+        /**
+         * checks if expr1 evaluates less than from expr2
+         * @method lt
+         * @param {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} expr2
+         * @returns {sqlFun}
+         */
+        function lt(expr1, expr2) {
+            var expr = autofield(expr1),
+                f = function(r, context) {
+                    var v1 = calc(expr, r, context), v2;
+                    if (v1 === undefined) {
+                        return undefined;
+                    }
+                    if (v1 === null) {
+                        return false;
+                    }
+                    v2 = calc(expr2, r, context);
+                    if (v2 === undefined) {
+                        return undefined;
+                    }
+                    if (v2 === null) {
+                        return false;
+                    }
+                    return v1 &lt; v2;
+                };
+            f.toString = function() {
+                return &#x27;lt(&#x27; + expr.toString() + &#x27;,&#x27; + expr2.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;lt&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.lt(expr, expr2, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * checks if expr1 evaluates less than or equal to from expr2
+         * @method le
+         * @param {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} expr2
+         * @returns {sqlFun}
+         */
+        function le(expr1, expr2) {
+            var expr = autofield(expr1),
+                f = function(r, context) {
+                    var v1 = calc(expr, r, context), v2;
+                    if (v1 === undefined) {
+                        return undefined;
+                    }
+                    if (v1 === null) {
+                        return false;
+                    }
+
+                    v2 = calc(expr2, r, context);
+                    if (v2 === undefined) {
+                        return undefined;
+                    }
+                    if (v2 === null) {
+                        return false;
+                    }
+                    return v1 &lt;= v2;
+                };
+            f.toString = function() {
+                return &#x27;le(&#x27; + expr.toString() + &#x27;,&#x27; + expr2.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;le&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.le(expr, expr2, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * checks if expr1 evaluates greater than expr2
+         * @method gt
+         * @param {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} expr2
+         * @returns {sqlFun}
+         */
+        function gt(expr1, expr2) {
+            var expr = autofield(expr1),
+                f = function(r, context) {
+                    var v1 = calc(expr, r, context), v2;
+                    if (v1 === undefined) {
+                        return undefined;
+                    }
+                    if (v1 === null) {
+                        return false;
+                    }
+                    v2 = calc(expr2, r, context);
+                    if (v2 === undefined) {
+                        return undefined;
+                    }
+                    if (v2 === null) {
+                        return false;
+                    }
+
+                    return v1 &gt; v2;
+                };
+            f.toString = function() {
+                return &#x27;gt(&#x27; + expr.toString() + &#x27;,&#x27; + expr2.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;gt&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.gt(expr, expr2, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * checks if expr1 evaluates greater than or equal to expr2
+         * @method ge
+         * @param  {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param  {sqlFun|object} expr2
+         * @returns {sqlFun}
+         */
+        function ge(expr1, expr2) {
+            var expr = autofield(expr1),
+                f = function(r, context) {
+                    var v1 = calc(expr, r, context), v2;
+                    if (v1 === undefined) {
+                        return undefined;
+                    }
+                    if (v1 === null) {
+                        return false;
+                    }
+                    v2 = calc(expr2, r, context);
+                    if (v2 === undefined) {
+                        return undefined;
+                    }
+                    if (v2 === null) {
+                        return false;
+                    }
+
+                    return v1 &gt;= v2;
+                };
+
+            f.toString = function() {
+                return &#x27;ge(&#x27; + toString(expr) + &#x27;,&#x27; + toString(expr2) + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;ge&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.ge(expr, expr2, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * checks if at least one of supplied expression evaluates to a truthy value
+         * @method or
+         * @param {sqlFun[]|object[]} arr  array or list of expression
+         * @returns {sqlFun}
+         */
+        function or(arr) {
+            var a = arr,
+                alwaysTrue = false,
+                f;
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+            var optimizedArgs = _.filter(a,
+                function (el) {
+                    if (el === undefined) {
+                        return false;
+                    }
+                    if (el === null) {
+                        return false;
+                    }
+
+                    if (el === false) {
+                        return false;
+                    }
+                    //noinspection JSUnresolvedVariable
+                    if (el.isFalse) {
+                        return false;
+                    }
+
+                    //noinspection JSUnresolvedVariable
+                    if (el === true || el.isTrue) {
+                        alwaysTrue = true;
+                    }
+                    return true;
+                });
+            if (alwaysTrue) {
+                return constant(true);
+            }
+            if (optimizedArgs.length === 0) {
+                return constant(false);
+            }
+
+            f = function (r, context) {
+                var i,
+                    someUndefined = false;
+                for (i = 0; i &lt; optimizedArgs.length; i += 1) {
+                    var x = calc(optimizedArgs[i], r, context);
+                    if (x === true) {
+                        return true;
+                    }
+                    if (x === undefined) {
+                        someUndefined = true;
+                    }
+                }
+                if (someUndefined) {
+                    return undefined;
+                }
+                return false;
+            };
+            f.toString = function () {
+                return &#x27;or(&#x27; + arrayToString(a) + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;or&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function (formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.joinOr(_.map(optimizedArgs, function (v) {
+                    //noinspection JSUnresolvedFunction
+                    return formatter.toSql(v, context);
+                }));
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * return the first object not null in the  array parameter
+         * @param {sqlFun[]|object[]} arr
+         * @returns {sqlFun}
+         */
+        function coalesce(arr) {
+            var a = arr,
+                f;
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+            f = function(r, context) {
+                var i;
+                for (i = 0; i &lt; a.length; i += 1) {
+                    var x = calc(a[i], r, context);
+                    if (x === undefined) {
+                        return undefined;
+                    }
+                    if (x !== null) {
+                        return x;
+                    }
+                }
+                return null;
+            };
+            f.toString = function() {
+                return &#x27;coalesce(&#x27; + arrayToString(a) + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;coalesce&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.coalesce(_.map(a, function(v) {
+                    //noinspection JSUnresolvedFunction
+                    return formatter.toSql(v, context);
+                }));
+            };
+            return toSqlFun(f, toSql);
+        }
+
+
+        /**
+         * checks if expr1 is null or equal to expr2
+         * @method isNullOrEq
+         * @param  {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param  {sqlFun|object} expr2
+         * @return {sqlFun}
+         */
+        function isNullOrEq(expr1, expr2) {
+            var expr = autofield(expr1);
+            return or(isNull(expr), eq(expr, expr2));
+        }
+
+        /**
+         * checks if expr1 is null or greater than expr2
+         * @method isNullOrGt
+         * @param  {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param   {sqlFun|object} expr2
+         * @returns {sqlFun}
+         */
+        function isNullOrGt(expr1, expr2) {
+            var expr = autofield(expr1);
+            return or(isNull(expr), gt(expr, expr2));
+        }
+
+        /**
+         * checks if expr1 is null or greater than or equal to expr2
+         * @method isNullOrGe
+         * @param expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param expr2
+         * @return {sqlFun}
+         */
+        function isNullOrGe(expr1, expr2) {
+            var expr = autofield(expr1);
+            return or(isNull(expr), ge(expr, expr2));
+        }
+
+        /**
+         * checks if expr1 is null or less than expr2
+         * @method isNullOrLt
+         * @param  {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param  {sqlFun|object} expr2
+         * @return {sqlFun}
+         */
+        function isNullOrLt(expr1, expr2) {
+            var expr = autofield(expr1);
+            return or(isNull(expr), lt(expr, expr2));
+        }
+
+        /**
+         * checks if expr1 is null or less than or equal to expr2
+         * @method isNullOrLe
+         * @param {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun|object} expr2
+         * @returns {sqlFun}
+         */
+        function isNullOrLe(expr1, expr2) {
+            var expr = autofield(expr1);
+            return or(isNull(expr), le(expr, expr2));
+        }
+
+        /**
+         * Evaluates the maximum value of an expression in a table. If any undefined is found, return undefined.
+         * Null are skipped. If all is null return null
+         * @method max
+         * @param {sqlFun|string|object} expr1
+         * @returns {sqlFun}
+         */
+        function max(expr1) {
+            var expr = autofield(expr1),
+                f = function(arr, context) {
+                    if (arr === undefined) {
+                        return undefined;
+                    }
+                    var m = null;
+                    _.forEach(arr, function(el) {
+                        var val = calc(expr, el, context);
+                        if (val === undefined) {
+                            m = undefined; //if any undefined is found, return undefined
+                            return false;
+                        }
+                        if (m === null) {
+                            m = val;
+                            return undefined;
+                        }
+                        if (val === null) {
+                            return undefined;
+                        }
+                        if (val &gt; m) {
+                            m = val;
+                        }
+                        return undefined;
+                    });
+                    return m;
+                };
+            f.toString = function() {
+                return &#x27;max(&#x27; + expr.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;max&#x27;;
+            f.myArguments = arguments;
+
+            f.grouping = true;
+            var toSql = function(formatter, context) {
+                return formatter.max(expr, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * Evaluates the minimum value of an expression in a table. If any undefined is found, return undefined.
+         * Null are skipped. If all is null return null
+         * @method min
+         * @param {sqlFun|string|object} expr1
+         * @returns {sqlFun}
+         */
+        function min(expr1) {
+            var expr = autofield(expr1),
+                f = function(arr, context) {
+                    if (arr === undefined) {
+                        return undefined;
+                    }
+                    var m = null;
+                    _.forEach(arr, function(el) {
+                        var val = calc(expr, el, context);
+                        if (val === undefined) {
+                            m = undefined; //if any undefined is found, return undefined
+                            return false;
+                        }
+                        if (m === null) {
+                            m = val;
+                            return undefined;
+                        }
+                        if (val === null) {
+                            return undefined;
+                        }
+                        if (val &lt; m) {
+                            m = val;
+                        }
+                        return undefined;
+                    });
+                    return m;
+                };
+            f.toString = function() {
+                return &#x27;min(&#x27; + expr.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;min&#x27;;
+            f.myArguments = arguments;
+
+            f.grouping = true;
+            var toSql = function(formatter, context) {
+                return formatter.min(expr, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+
+        /**
+         * @method substring
+         * @param {sqlFun|string|object} expr1
+         * @param {sqlFun|object} start
+         * @param {sqlFun|object} len
+         * @returns {sqlFun}
+         */
+        function substring(expr1, start, len) {
+            var expr = autofield(expr1),
+                f = function(r, context) {
+                    if (r === undefined) {
+                        return undefined;
+                    }
+                    var vExpr = calc(expr, r, context), vStart, vLen;
+                    if (vExpr === undefined) {
+                        return undefined;
+                    }
+                    if (vExpr === null) {
+                        return null;
+                    }
+
+                    vStart = calc(start, r, context);
+                    if (vStart === undefined) {
+                        return undefined;
+                    }
+                    if (vStart === null) {
+                        return null;
+                    }
+                    vStart -= 1; //javascript substring starting index is 0, sql is 1
+                    vLen = calc(len, r, context);
+                    if (vLen === undefined) {
+                        return undefined;
+                    }
+                    if (vLen === null) {
+                        return null;
+                    }
+                    if (vStart &lt; 0) {
+                        vStart = 0;
+                    }
+                    return vExpr.substr(vStart, vLen);
+                };
+            f.toString = function() {
+                return &#x27;substring(&#x27; + toString(expr) + &#x27;,&#x27; + toString(start) + &#x27;,&#x27; + toString(len) + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;substring&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.substring(expr, start, len, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * Converts a generic expression into an integer
+         * @method convertToInt
+         * @param {sqlFun|string|object} expr1
+         * @returns {sqlFun}
+         */
+        function convertToInt(expr1) {
+            var expr = autofield(expr1),
+                f = function(r, context) {
+                    if (r === undefined) {
+                        return undefined;
+                    }
+                    var vExpr = calc(expr, r, context);
+                    if (vExpr === undefined) {
+                        return undefined;
+                    }
+                    if (vExpr === null || vExpr === &#x27;&#x27;) {
+                        return null;
+                    }
+                    return parseInt(vExpr, 10);
+                };
+            f.toString = function() {
+                return &#x27;convertToInt(&#x27; + expr.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;convertToInt&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.convertToInt(expr, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * Converts a generic expression into a string
+         * @method convertToString
+         * @param {sqlFun|string|object} expr1
+         * @param {int} maxLen maximum string len
+         * @returns {sqlFun}
+         */
+        function convertToString(expr1, maxLen) {
+            var expr = autofield(expr1),
+                f = function(r, context) {
+                    if (r === undefined) {
+                        return undefined;
+                    }
+                    var vExpr = calc(expr, r, context);
+                    if (vExpr === undefined) {
+                        return undefined;
+                    }
+                    if (vExpr === null) {
+                        return null;
+                    }
+                    return vExpr.toString().substr(0, maxLen);
+                };
+            f.toString = function() {
+                return &#x27;convertToString(&#x27; + expr.toString() + &#x27;,&#x27; + maxLen.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;convertToString&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.convertToString(expr, maxLen, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * checks if all supplied expression evaluate to truthy values
+         * @method and
+         * @param {sqlFun[]|object[]} arr array or list of expression
+         * @return {sqlFun}
+         */
+        function and(arr) {
+            var a = arr,
+                alwaysFalse = false,
+                f;
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+            var optimizedArgs = _.filter(a, function(el) {
+                if (el === undefined) {
+                    return false;
+                }
+                if (el === null) {
+                    return false;
+                }
+                //noinspection JSUnresolvedVariable
+                if (el === true || el.isTrue) {
+                    return false;
+                }
+                //noinspection JSUnresolvedVariable
+                if (el === false || el.isFalse) {
+                    alwaysFalse = true;
+                }
+                return true;
+            });
+
+            if (alwaysFalse) {
+                return constant(false);
+            }
+
+            if (optimizedArgs.length === 0) {
+                return constant(true);
+            }
+
+            f = function(r, context) {
+                var i;
+                var someUndefined = false;
+                for (i = 0; i &lt; optimizedArgs.length; i += 1) {
+                    var x = calc(optimizedArgs[i], r, context);
+                    if (x === false) {
+                        return false;
+                    }
+                    if (x === undefined) {
+                        someUndefined = true;
+                    }
+                }
+                if (someUndefined) {
+                    return undefined;
+                }
+                return true;
+            };
+            f.toString = function() {
+                return &#x27;and(&#x27; + arrayToString(a) + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;and&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.joinAnd(_.map(optimizedArgs, function(v) {
+                    //noinspection JSUnresolvedFunction
+                    return formatter.toSql(v, context);
+                }));
+            };
+
+            return toSqlFun(f, toSql);
+        }
+
+
+        /**
+         * Compares a set of keys of an object with an array of values or with fields of another object
+         *  values can be an array or an object
+         * @method mcmp
+         * @param {string[]|object[]} keys
+         * @param {sqlFun[]|object[]} values
+         * @param {string} [alias]
+         * @return {sqlFun} f(r) = true if :
+         *  case values is an array: r[keys[i]] = values[i] for each i=0..keys.length-1
+         *  case values is an object: r[keys[i]] = values[keys[i]] for each i=0..keys.length-1
+         */
+        function mcmp(keys, values, alias) {
+            if (keys.length === 0) {
+                return constant(true);
+            }
+            var myValues = _.clone(values), //stabilizes input!!
+                picked;
+
+            if (_.isArray(values)) {
+                picked = values; //_.map(values, function(v) {return formatter.toSql(v, context);});
+            } else {
+                picked = _.map(keys, function(k) {
+                    return values[k];
+                });
+            }
+
+            if (_.includes(picked, null)) {
+                return constant(false);
+            }
+
+            var f = function(r, context) {
+                if (r === undefined) {
+                    return undefined;
+                }
+                var i, field, value;
+                for (i = 0; i &lt; keys.length; i += 1) {
+                    field = keys[i];
+                    if (_.isArray(myValues)) {
+                        value = calc(myValues[i], r, context);
+                    } else {
+                        value = myValues[field];
+                    }
+
+                    if (isNullOrUndefined(r[field]) || isNullOrUndefined(value)) {
+                        return false;
+                    }
+                    if (r[field] !== value) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+            f.toString = function() {
+                return &#x27;mcmp(&#x27; + arrayToString(keys) + &#x27;,&#x27; + arrayToString(picked) + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;mcmp&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                var k, v;
+
+                //noinspection JSUnresolvedFunction
+                return formatter.joinAnd(
+                    _.map(
+                        _.zip(keys, picked),
+                        function(pair) {
+                            k = pair[0];
+                            v = pair[1];
+                            if (isNullOrUndefined(v)) {
+                                return formatter.isNull(field(k, alias), context);
+                            }
+                            return formatter.eq(field(k, alias), v, context);
+                        }
+                    )
+                );
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * Compares a set of keys of an object with an array of values or with fields of another object
+         * @method mcmpLike
+         * @param {object} example
+         * @param {string} [alias] eventually table alias to use in conjunction with example field names
+         * @return {sqlFun} f(r) = true if  for each non empty field of r:
+         *  case field is a string containing a %:  field LIKE example[field]
+         *  otherwise: field = example[field]
+         */
+        function mcmpLike(example, alias) {
+            if (example === null || example === undefined) {
+                return constant(true);
+            }
+
+            var exprArr = [],
+                myValues = _.clone(example);
+
+            _.forEach(_.keys(example), function(k) {
+                if (myValues[k] === undefined || myValues[k] === &#x27;&#x27; || myValues[k] === null) {
+                    return;
+                }
+                if (_.isString(myValues[k])) {
+                    exprArr.push(like(field(k, alias), myValues[k]));
+
+                } else {
+                    exprArr.push(eq(field(k, alias), myValues[k]));
+                }
+            });
+            return and(exprArr);
+        }
+
+        /**
+             * Compares a set of keys of an object with an array of values or with fields of another object
+             * @method mcmpEq
+             * @param {object} example
+             * @param {string} [alias]
+             * @return {sqlFun} f(r) = true if  for each non empty field of r:
+             *  case field is null :    field is null
+             *  otherwise: r[field] = example[field]
+             */
+        function mcmpEq(example, alias) {
+            if (example === null || example === undefined) {
+                return constant(true);
+            }
+
+            var exprArr = [],
+                myValues = _.clone(example);
+
+            _.forEach(_.keys(example), function(k) {
+                if (myValues[k] === undefined) {
+                    return;
+                }
+                if (myValues[k] === &#x27;&#x27; || myValues[k] === null) {
+                    exprArr.push(isNull(field(k, alias)));
+                    return;
+                }
+                exprArr.push(eq(field(k, alias), myValues[k]));
+            });
+            return and(exprArr);
+        }
+
+        /**
+         * returns a functions that does a subtraction
+         * @method sub
+         * @param {sqlFun|string|object} expr1
+         * @param {sqlFun|object} expr2
+         * @return {sqlFun}
+         */
+        function sub(expr1, expr2) {
+            var expr = autofield(expr1),
+                f;
+            f = function(r, context) {
+                if (r === undefined) {
+                    return undefined;
+                }
+                var x = calc(expr, r, context), y;
+                if (x === undefined) {
+                    return undefined;
+                }
+                if (x === null) {
+                    return null;
+                }
+
+                y = calc(expr2, r, context);
+                if (y === undefined) {
+                    return undefined;
+                }
+                if (y === null) {
+                    return null;
+                }
+                return x - y;
+            };
+            f.toString = function() {
+                return expr.toString() + &#x27;-&#x27; + expr2.toString();
+            };
+
+            f.myName = &#x27;sub&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.sub(expr, expr2, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+
+        /**
+         * returns a functions that does a division
+         * @method div
+         * @param {sqlFun|string|object} expr1
+         * @param {sqlFun|object} expr2
+         * @return {sqlFun}
+         */
+        function div(expr1, expr2) {
+            var expr = autofield(expr1),
+                f;
+            f = function(r, context) {
+                if (r === undefined) {
+                    return undefined;
+                }
+                var x = calc(expr, r, context), y;
+                if (x === undefined) {
+                    return undefined;
+                }
+                if (x === null) {
+                    return null;
+                }
+                y = calc(expr2, r, context);
+                if (y === undefined) {
+                    return undefined;
+                }
+                if (y === null) {
+                    return null;
+                }
+                return x / y;
+            };
+            f.toString = function() {
+                return &#x27;div(&#x27; + expr.toString() + &#x27;,&#x27; + expr2.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;div&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.div(expr, expr2, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * returns a functions that evaluates the sum of a list or array of values given when it is CREATED
+         * @method add
+         * @param {sqlFun[]|object[]} values
+         * @return {sqlFun}
+         */
+        function add(values) {
+            var a = values,
+                f;
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+            f = function(r, context) {
+                var i,
+                    sum = null;
+                for (i = 0; i &lt; a.length; i += 1) {
+                    var x = calc(a[i], r, context);
+                    if (x === undefined) {
+                        return undefined;
+                    }
+                    if (sum === null) {
+                        sum = x;
+                    } else {
+                        if (x !== null) {
+                            sum += x;
+                        }
+                    }
+                }
+                return sum;
+            };
+            f.toString = function() {
+                return &#x27;add(&#x27; + arrayToString(a) + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;add&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.add(a, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * returns a functions that evaluates the concatenation of a list or array of strings given when it is CREATED
+         * @method concat
+         * @param {sqlFun[]|object[]} values
+         * @return {sqlFun}
+         */
+        function concat(values) {
+            var a = values,
+                f;
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+            f = function(r, context) {
+                var i,
+                    seq = null;
+                for (i = 0; i &lt; a.length; i += 1) {
+                    var x = calc(a[i], r, context);
+                    if (x === undefined) {
+                        return undefined;
+                    }
+                    if (seq === null) {
+                        seq = x;
+                    } else {
+                        if (x !== null) {
+                            seq += x;
+                        }
+                    }
+                }
+                return seq;
+            };
+            f.toString = function() {
+                return &#x27;concat(&#x27; + arrayToString(values) + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;concat&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.concat(a, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+
+        /**
+         * Evaluates the sum of an array of element given at run time
+         * @method sum
+         * @param {sqlFun|string|object} expr1
+         * @returns {sqlFun}
+         */
+        function sum(expr1) {
+            var expr = autofield(expr1),
+                f = function(values, context) {
+                    if (values === undefined) {
+                        return undefined;
+                    }
+                    if (values === null) {
+                        return null;
+                    }
+                    var a = values;
+                    if (!_.isArray(a)) {
+                        a = [].slice.call(arguments);
+                    }
+
+                    var i,
+                        sum = null;
+                    for (i = 0; i &lt; a.length; i += 1) {
+                        var x = calc(expr, a[i], context);
+                        if (x === undefined) {
+                            return undefined;
+                        }
+                        if (sum === null) {
+                            sum = x;
+                        } else {
+                            if (x !== null) {
+                                sum += x;
+                            }
+                        }
+                    }
+                    return sum;
+                };
+            f.toString = function() {
+                return &#x27;sum(&#x27; + expr.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;sum&#x27;;
+            f.myArguments = arguments;
+
+            f.grouping = true;
+            var toSql = function(formatter, context) {
+                return formatter.sum(expr, context);
+            };
+
+            return toSqlFun(f, toSql);
+        }
+
+
+        /**
+         * returns a functions that evaluates the multiply of a list or array of values
+         * If some operand is 0, returns the always 0 function
+         * @method mul
+         * @param {sqlFun[]|object[]} values
+         * @return {sqlFun}
+         */
+        function mul(values) {
+            var a = values,
+                f;
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+            f = function(r, context) {
+                var i,
+                    prod = null,
+                    someUndefined = false;
+                for (i = 0; i &lt; a.length; i += 1) {
+                    var x = calc(a[i], r, context);
+                    if (x === undefined) {
+                        someUndefined = true;
+                    } else if (x === 0) {
+                        return 0;
+                    } else if (x !== null) {
+                        if (prod === null) {
+                            prod = x;
+                        } else {
+                            prod *= x;
+                        }
+                    }
+                }
+                if (someUndefined) {
+                    return undefined;
+                }
+                return prod;
+            };
+
+            f.toString = function() {
+                return &#x27;mul(&#x27; + arrayToString(values) + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;mul&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.mul(_.map(a, function(v) {
+                    //noinspection JSUnresolvedFunction
+                    return formatter.toSql(v, context);
+                }));
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        function arrayToString(arr) {
+            return &#x27;[&#x27; + _.map(arr, function(value) {
+                return toString(value);
+            }).join(&#x27;,&#x27;) + &#x27;]&#x27;;
+        }
+
+        /**
+         * Converts a sqlFun to an plain object.
+         * @param {sqlFun|sqlFun[]|object|object[]} obj
+         * @returns {object}
+         */
+        function toObject(obj) {
+            if (_.isFunction(obj)) {
+                var name = obj.myName;
+                var args = _.map(obj.myArguments, function(arg) {
+                    return toObject(arg);
+                });
+
+                return { name: name, args: args, alias:obj.alias };
+            }
+
+            if (_.isArray(obj)) {
+                var arr = _.map(obj, function(item) {
+                    return toObject(item);
+                });
+                return { array: arr };
+            }
+
+            return { value: obj };
+        }
+
+        /**
+         * Converts an object back to a sqlFun
+         * @param {object} obj
+         * @returns {sqlFun|sqlFun[]|object|object[]}
+         */
+        function fromObject(obj) {
+            if (!_.isObject(obj)) {
+                throw &quot;Must be an object&quot;;
+            }
+
+            if (obj.hasOwnProperty(&#x27;value&#x27;)) {
+                return obj.value;
+            }
+
+            if (obj.hasOwnProperty(&#x27;array&#x27;)) {
+                return _.map(obj.array, function(item) {
+                    return fromObject(item);
+                });
+            }
+
+            if (obj.hasOwnProperty(&#x27;name&#x27;) &amp;&amp; obj.hasOwnProperty(&#x27;args&#x27;)) {
+                var name = obj.name;
+                var args = _.map(obj.args, function(arg) {
+                    return fromObject(arg);
+                });
+
+                var f = dataQuery[name];
+                var result= f.apply(this, args);
+                result.alias = obj.alias;
+                return result;
+            }
+
+            return null;
+        }
+
+        var dataQuery = {
+            context: context,
+            calc: calc,
+            add: add,
+            concat: concat,
+            sub: sub,
+            div: div,
+            minus: minus,
+            mul: mul,
+            mcmp: mcmp,
+            mcmpLike: mcmpLike,
+            mcmpEq: mcmpEq,
+            isNull: isNull,
+            isNotNull: isNotNull,
+            constant: constant,
+            and: and,
+            or: or,
+            field: field,
+            eq: eq,
+            ne: ne,
+            gt: gt,
+            ge: ge,
+            lt: lt,
+            le: le,
+            not: not,
+            isNullOrEq: isNullOrEq,
+            isNullOrGt: isNullOrGt,
+            isNullOrGe: isNullOrGe,
+            isNullOrLt: isNullOrLt,
+            isNullOrLe: isNullOrLe,
+            bitClear: bitClear,
+            bitSet: bitSet,
+            isIn: isIn,
+            isNotIn: isNotIn,
+            distinctVal: distinctVal,
+            distinct: distinct,
+            like: like,
+            between: between,
+            testMask: testMask,
+            max: max,
+            min: min,
+            substring: substring,
+            convertToInt: convertToInt,
+            convertToString: convertToString,
+            sum: sum,
+            coalesce: coalesce,
+            toObject: toObject,
+            fromObject: fromObject,
+            myLoDash: _ //for testing purposes
+        };
+
+        // Some AMD build optimizers like r.js check for condition patterns like the following:
+        //noinspection JSUnresolvedVariable
+        if (typeof define == &#x27;function&#x27; &amp;&amp; typeof define.amd == &#x27;object&#x27; &amp;&amp; define.amd) {
+            // Expose lodash to the global object when an AMD loader is present to avoid
+            // errors in cases where lodash is loaded by a script tag and not intended
+            // as an AMD module. See http://requirejs.org/docs/errors.html#mismatch for
+            // more details.
+            root.jsDataQuery = dataQuery;
+
+            // Define as an anonymous module so, through path mapping, it can be
+            // referenced as the &quot;underscore&quot; module.
+            define(function() {
+                return dataQuery;
+            });
+        }
+        // Check for &#x60;exports&#x60; after &#x60;define&#x60; in case a build optimizer adds an &#x60;exports&#x60; object.
+        else if (freeExports &amp;&amp; freeModule) {
+            // Export for Node.js or RingoJS.
+            if (moduleExports) {
+                (freeModule.exports = dataQuery).jsDataQuery = dataQuery;
+            }
+            // Export for Narwhal or Rhino -require.
+            else {
+                freeExports.jsDataQuery = dataQuery;
+            }
+        } else {
+            // Export for a browser or Rhino.
+            root.jsDataQuery = dataQuery;
+        }
+    }.call(this,
+        (typeof _ === &#x27;undefined&#x27;) ? require(&#x27;lodash&#x27;) : _
+    )
+);
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
