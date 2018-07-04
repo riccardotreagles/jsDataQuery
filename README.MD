@@ -1,7 +1,8 @@
 # jsDataQuery
 Query functions convertable into sql expressions
 
-Yuidoc documents available [http://gaelazzo.github.io/jsDataQuery/](http://gaelazzo.github.io/jsDataQuery/ "here")
+Yuidoc documents available [here](http://gaelazzo.github.io/jsDataQuery/)
+
 jsDataQuery allow building sql expression {*sqlFun*} that can be applied to javascript objects. Then it is possible to convert that expression into a sql-readable string, simply invoking the toSql method of the object.
 
 **toSql** method is not specific to a single database provider, infact it must be supplied from the external.
