@@ -483,7 +483,6 @@
             return toSqlFun(f, toSql);
         }
 
-
         /**
          * @method not
          * @param {sqlFun|string|object} expr1
@@ -662,44 +661,6 @@
             return toSqlFun(f, toSql);
         }
 
-
-        /**
-         * @method bitwiseAnd
-         * @param {sqlFun[]|object[]} arr array or list of expression
-         * @return {sqlFun}
-         */
-        function bitwiseAnd(arr) {
-            var a = arr,
-                f;
-            
-            if (!_.isArray(a)) {
-                a = [].slice.call(arguments);
-            }
-
-            var expr = autofield(expression),
-                f = function(r, context) {
-                    var v1 = calc(expr, r, context);
-                    if (isNullOrUndefined(v1)) {
-                        return v1;
-                    }
-                    if (!!v1 === v1) { //checks if (typeof n === 'boolean')
-                        return !v1;
-                    }
-                    return ~v1;
-                };
-            f.toString = function() {
-                return '~(' + expr.toString() + ')';
-            };
-
-            f.myName = 'bitwiseNot';
-            f.myArguments = arguments;
-
-            var toSql = function(formatter, context) {
-                return formatter.bitwiseNot(expr, context);
-            };
-            return toSqlFun(f, toSql);
-        }
-
         /**
          * @method bitwiseNot
          * @param {sqlFun|string|object} }  expression note: this is autofield-ed, so if you can use a field name for it
@@ -731,6 +692,65 @@
         }
 
         /**
+         * @method bitwiseAnd
+         * @param {sqlFun[]|object[]} arr array or list of expression
+         * @return {sqlFun}
+         */
+        function bitwiseAnd(arr) {
+            var a = arr,
+                f;
+            
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+
+            f = function(r, context) {
+                var result = null,
+                    someNull = false,
+                    someUndefined = false;
+                    i;
+                
+                for (i = 0; i < a.length; i += 1) {
+                    var x = calc(a[i], r, context);
+                    if (x === undefined) {
+                        someUndefined = true;
+                    }
+                    if (isNull(x)) {
+                        someNull = true;
+                    }
+                    if (result === null) {
+                        result = x;
+                    } else {
+                        result = result & x;
+                    }
+                }
+                if (someNull) {
+                    return null;
+                }
+                if (someUndefined) {
+                    return undefined;
+                }
+                return result;
+            };
+
+            f.toString = function() {
+                return '&(' + arrayToString(a) + ')';
+            };
+
+            f.myName = 'bitwiseAnd';
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.bitwiseAnd(_.map(a, function(v) {
+                    //noinspection JSUnresolvedFunction
+                    return formatter.toSql(v, context);
+                }));
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
          * @method bitwiseOr
          * @param {sqlFun[]|object[]} arr array or list of expression
          * @return {sqlFun}
@@ -743,11 +763,48 @@
                 a = [].slice.call(arguments);
             }
 
+            f = function(r, context) {
+                var result = null,
+                    someNull = false,
+                    someUndefined = false;
+                    i;
+                
+                for (i = 0; i < a.length; i += 1) {
+                    var x = calc(a[i], r, context);
+                    if (x === undefined) {
+                        someUndefined = true;
+                    }
+                    if (isNull(x)) {
+                        someNull = true;
+                    }
+                    if (result === null) {
+                        result = x;
+                    } else {
+                        result = result | x;
+                    }
+                }
+                if (someNull) {
+                    return null;
+                }
+                if (someUndefined) {
+                    return undefined;
+                }
+                return result;
+            };
+
+            f.toString = function() {
+                return '|(' + arrayToString(a) + ')';
+            };
+
             f.myName = 'bitwiseOr';
             f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
-                return formatter.bitwiseOr(expr, context);
+                //noinspection JSUnresolvedFunction
+                return formatter.bitwiseOr(_.map(a, function(v) {
+                    //noinspection JSUnresolvedFunction
+                    return formatter.toSql(v, context);
+                }));
             };
             return toSqlFun(f, toSql);
         }
@@ -765,16 +822,52 @@
                 a = [].slice.call(arguments);
             }
 
+            f = function(r, context) {
+                var result = null,
+                    someNull = false,
+                    someUndefined = false;
+                    i;
+                
+                for (i = 0; i < a.length; i += 1) {
+                    var x = calc(a[i], r, context);
+                    if (x === undefined) {
+                        someUndefined = true;
+                    }
+                    if (isNull(x)) {
+                        someNull = true;
+                    }
+                    if (result === null) {
+                        result = x;
+                    } else {
+                        result = result ^ x;
+                    }
+                }
+                if (someNull) {
+                    return null;
+                }
+                if (someUndefined) {
+                    return undefined;
+                }
+                return result;
+            };
+
+            f.toString = function() {
+                return '^(' + arrayToString(a) + ')';
+            };
+
             f.myName = 'bitwiseXor';
             f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
-                return formatter.bitwiseXor(expr, context);
+                //noinspection JSUnresolvedFunction
+                return formatter.bitwiseXor(_.map(a, function(v) {
+                    //noinspection JSUnresolvedFunction
+                    return formatter.toSql(v, context);
+                }));
             };
             return toSqlFun(f, toSql);
         }
         
-
         /**
          * Check if the nth bit of expression is set
          * @method bitSet
