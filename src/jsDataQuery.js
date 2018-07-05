@@ -707,13 +707,12 @@
             f = function(r, context) {
                 var result = null,
                     someNull = false,
-                    someUndefined = false;
                     i;
                 
                 for (i = 0; i < a.length; i += 1) {
                     var x = calc(a[i], r, context);
                     if (x === undefined) {
-                        someUndefined = true;
+                        return undefined;
                     }
                     if (isNull(x)) {
                         someNull = true;
@@ -726,9 +725,6 @@
                 }
                 if (someNull) {
                     return null;
-                }
-                if (someUndefined) {
-                    return undefined;
                 }
                 return result;
             };
@@ -766,13 +762,12 @@
             f = function(r, context) {
                 var result = null,
                     someNull = false,
-                    someUndefined = false;
                     i;
                 
                 for (i = 0; i < a.length; i += 1) {
                     var x = calc(a[i], r, context);
                     if (x === undefined) {
-                        someUndefined = true;
+                        return undefined;
                     }
                     if (isNull(x)) {
                         someNull = true;
@@ -785,9 +780,6 @@
                 }
                 if (someNull) {
                     return null;
-                }
-                if (someUndefined) {
-                    return undefined;
                 }
                 return result;
             };
@@ -825,13 +817,12 @@
             f = function(r, context) {
                 var result = null,
                     someNull = false,
-                    someUndefined = false;
                     i;
                 
                 for (i = 0; i < a.length; i += 1) {
                     var x = calc(a[i], r, context);
                     if (x === undefined) {
-                        someUndefined = true;
+                        return undefined;
                     }
                     if (isNull(x)) {
                         someNull = true;
@@ -844,9 +835,6 @@
                 }
                 if (someNull) {
                     return null;
-                }
-                if (someUndefined) {
-                    return undefined;
                 }
                 return result;
             };
