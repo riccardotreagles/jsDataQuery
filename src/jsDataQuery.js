@@ -511,7 +511,7 @@
             return toSqlFun(f, toSql);
         }
 
-                /**
+        /**
          * checks if all supplied expression evaluate to truthy values
          * @method and
          * @param {sqlFun[]|object[]} arr array or list of expression
@@ -662,7 +662,44 @@
             return toSqlFun(f, toSql);
         }
 
-        
+
+        /**
+         * @method bitwiseAnd
+         * @param {sqlFun[]|object[]} arr array or list of expression
+         * @return {sqlFun}
+         */
+        function bitwiseAnd(expression) {
+            var a = arr,
+                f;
+            
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+
+            var expr = autofield(expression),
+                f = function(r, context) {
+                    var v1 = calc(expr, r, context);
+                    if (isNullOrUndefined(v1)) {
+                        return v1;
+                    }
+                    if (!!v1 === v1) { //checks if (typeof n === 'boolean')
+                        return !v1;
+                    }
+                    return ~v1;
+                };
+            f.toString = function() {
+                return '~(' + expr.toString() + ')';
+            };
+
+            f.myName = 'bitwiseNot';
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.bitwiseNot(expr, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
         /**
          * @method bitwiseNot
          * @param {sqlFun|string|object} }  expression note: this is autofield-ed, so if you can use a field name for it
@@ -692,6 +729,51 @@
             };
             return toSqlFun(f, toSql);
         }
+
+        /**
+         * @method bitwiseOr
+         * @param {sqlFun[]|object[]} arr array or list of expression
+         * @return {sqlFun}
+         */
+        function bitwiseOr(expression) {
+            var a = arr,
+                f;
+            
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+
+            f.myName = 'bitwiseOr';
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.bitwiseOr(expr, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * @method bitwiseXor
+         * @param {sqlFun[]|object[]} arr array or list of expression
+         * @return {sqlFun}
+         */
+        function bitwiseXor(expression) {
+            var a = arr,
+                f;
+            
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+
+            f.myName = 'bitwiseXor';
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.bitwiseXor(expr, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+        
 
         /**
          * Check if the nth bit of expression is set
@@ -2094,8 +2176,7 @@
             isNull: isNull,
             isNotNull: isNotNull,
             constant: constant,
-            and: and,
-            or: or,
+            
             field: field,
             eq: eq,
             ne: ne,
@@ -2103,13 +2184,18 @@
             ge: ge,
             lt: lt,
             le: le,
-            not: not,
-            bitwiseNot: bitwiseNot,
             isNullOrEq: isNullOrEq,
             isNullOrGt: isNullOrGt,
             isNullOrGe: isNullOrGe,
             isNullOrLt: isNullOrLt,
             isNullOrLe: isNullOrLe,
+            not: not,
+            and: and,
+            or: or,
+            bitwiseNot: bitwiseNot,
+            bitwiseAnd : bitwiseAnd,
+            bitwiseOr: bitwiseOr,
+            bitwiseXor : bitwiseXor,
             bitClear: bitClear,
             bitSet: bitSet,
             isIn: isIn,
