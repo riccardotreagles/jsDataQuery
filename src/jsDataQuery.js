@@ -668,7 +668,7 @@
          * @param {sqlFun[]|object[]} arr array or list of expression
          * @return {sqlFun}
          */
-        function bitwiseAnd(expression) {
+        function bitwiseAnd(arr) {
             var a = arr,
                 f;
             
@@ -735,7 +735,7 @@
          * @param {sqlFun[]|object[]} arr array or list of expression
          * @return {sqlFun}
          */
-        function bitwiseOr(expression) {
+        function bitwiseOr(arr) {
             var a = arr,
                 f;
             
@@ -757,7 +757,7 @@
          * @param {sqlFun[]|object[]} arr array or list of expression
          * @return {sqlFun}
          */
-        function bitwiseXor(expression) {
+        function bitwiseXor(arr) {
             var a = arr,
                 f;
             
