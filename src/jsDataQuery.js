@@ -511,6 +511,188 @@
             return toSqlFun(f, toSql);
         }
 
+                /**
+         * checks if all supplied expression evaluate to truthy values
+         * @method and
+         * @param {sqlFun[]|object[]} arr array or list of expression
+         * @return {sqlFun}
+         */
+        function and(arr) {
+            var a = arr,
+                alwaysFalse = false,
+                f;
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+            var optimizedArgs = _.filter(a, function(el) {
+                if (el === undefined) {
+                    return false;
+                }
+                if (el === null) {
+                    return false;
+                }
+                //noinspection JSUnresolvedVariable
+                if (el === true || el.isTrue) {
+                    return false;
+                }
+                //noinspection JSUnresolvedVariable
+                if (el === false || el.isFalse) {
+                    alwaysFalse = true;
+                }
+                return true;
+            });
+
+            if (alwaysFalse) {
+                return constant(false);
+            }
+
+            if (optimizedArgs.length === 0) {
+                return constant(true);
+            }
+
+            f = function(r, context) {
+                var i;
+                var someUndefined = false;
+                for (i = 0; i < optimizedArgs.length; i += 1) {
+                    var x = calc(optimizedArgs[i], r, context);
+                    if (x === false) {
+                        return false;
+                    }
+                    if (x === undefined) {
+                        someUndefined = true;
+                    }
+                }
+                if (someUndefined) {
+                    return undefined;
+                }
+                return true;
+            };
+            f.toString = function() {
+                return 'and(' + arrayToString(a) + ')';
+            };
+
+            f.myName = 'and';
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.joinAnd(_.map(optimizedArgs, function(v) {
+                    //noinspection JSUnresolvedFunction
+                    return formatter.toSql(v, context);
+                }));
+            };
+
+            return toSqlFun(f, toSql);
+        }
+        
+        /**
+         * checks if at least one of supplied expression evaluates to a truthy value
+         * @method or
+         * @param {sqlFun[]|object[]} arr  array or list of expression
+         * @returns {sqlFun}
+         */
+        function or(arr) {
+            var a = arr,
+                alwaysTrue = false,
+                f;
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+            var optimizedArgs = _.filter(a,
+                function (el) {
+                    if (el === undefined) {
+                        return false;
+                    }
+                    if (el === null) {
+                        return false;
+                    }
+
+                    if (el === false) {
+                        return false;
+                    }
+                    //noinspection JSUnresolvedVariable
+                    if (el.isFalse) {
+                        return false;
+                    }
+
+                    //noinspection JSUnresolvedVariable
+                    if (el === true || el.isTrue) {
+                        alwaysTrue = true;
+                    }
+                    return true;
+                });
+            if (alwaysTrue) {
+                return constant(true);
+            }
+            if (optimizedArgs.length === 0) {
+                return constant(false);
+            }
+
+            f = function (r, context) {
+                var i,
+                    someUndefined = false;
+                for (i = 0; i < optimizedArgs.length; i += 1) {
+                    var x = calc(optimizedArgs[i], r, context);
+                    if (x === true) {
+                        return true;
+                    }
+                    if (x === undefined) {
+                        someUndefined = true;
+                    }
+                }
+                if (someUndefined) {
+                    return undefined;
+                }
+                return false;
+            };
+            f.toString = function () {
+                return 'or(' + arrayToString(a) + ')';
+            };
+
+            f.myName = 'or';
+            f.myArguments = arguments;
+
+            var toSql = function (formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.joinOr(_.map(optimizedArgs, function (v) {
+                    //noinspection JSUnresolvedFunction
+                    return formatter.toSql(v, context);
+                }));
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        
+        /**
+         * @method bitwiseNot
+         * @param {sqlFun|string|object} }  expression note: this is autofield-ed, so if you can use a field name for it
+         * @return {sqlFun}
+         */
+        function bitwiseNot(expression) {
+            var expr = autofield(expression),
+                f = function(r, context) {
+                    var v1 = calc(expr, r, context);
+                    if (isNullOrUndefined(v1)) {
+                        return v1;
+                    }
+                    if (!!v1 === v1) { //checks if (typeof n === 'boolean')
+                        return !v1;
+                    }
+                    return ~v1;
+                };
+            f.toString = function() {
+                return '~(' + expr.toString() + ')';
+            };
+
+            f.myName = 'bitwiseNot';
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.bitwiseNot(expr, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
         /**
          * Check if the nth bit of expression is set
          * @method bitSet
@@ -1085,83 +1267,6 @@
         }
 
         /**
-         * checks if at least one of supplied expression evaluates to a truthy value
-         * @method or
-         * @param {sqlFun[]|object[]} arr  array or list of expression
-         * @returns {sqlFun}
-         */
-        function or(arr) {
-            var a = arr,
-                alwaysTrue = false,
-                f;
-            if (!_.isArray(a)) {
-                a = [].slice.call(arguments);
-            }
-            var optimizedArgs = _.filter(a,
-                function (el) {
-                    if (el === undefined) {
-                        return false;
-                    }
-                    if (el === null) {
-                        return false;
-                    }
-
-                    if (el === false) {
-                        return false;
-                    }
-                    //noinspection JSUnresolvedVariable
-                    if (el.isFalse) {
-                        return false;
-                    }
-
-                    //noinspection JSUnresolvedVariable
-                    if (el === true || el.isTrue) {
-                        alwaysTrue = true;
-                    }
-                    return true;
-                });
-            if (alwaysTrue) {
-                return constant(true);
-            }
-            if (optimizedArgs.length === 0) {
-                return constant(false);
-            }
-
-            f = function (r, context) {
-                var i,
-                    someUndefined = false;
-                for (i = 0; i < optimizedArgs.length; i += 1) {
-                    var x = calc(optimizedArgs[i], r, context);
-                    if (x === true) {
-                        return true;
-                    }
-                    if (x === undefined) {
-                        someUndefined = true;
-                    }
-                }
-                if (someUndefined) {
-                    return undefined;
-                }
-                return false;
-            };
-            f.toString = function () {
-                return 'or(' + arrayToString(a) + ')';
-            };
-
-            f.myName = 'or';
-            f.myArguments = arguments;
-
-            var toSql = function (formatter, context) {
-                //noinspection JSUnresolvedFunction
-                return formatter.joinOr(_.map(optimizedArgs, function (v) {
-                    //noinspection JSUnresolvedFunction
-                    return formatter.toSql(v, context);
-                }));
-            };
-            return toSqlFun(f, toSql);
-        }
-
-        /**
          * return the first object not null in the  array parameter
          * @param {sqlFun[]|object[]} arr
          * @returns {sqlFun}
@@ -1484,81 +1589,6 @@
             };
             return toSqlFun(f, toSql);
         }
-
-        /**
-         * checks if all supplied expression evaluate to truthy values
-         * @method and
-         * @param {sqlFun[]|object[]} arr array or list of expression
-         * @return {sqlFun}
-         */
-        function and(arr) {
-            var a = arr,
-                alwaysFalse = false,
-                f;
-            if (!_.isArray(a)) {
-                a = [].slice.call(arguments);
-            }
-            var optimizedArgs = _.filter(a, function(el) {
-                if (el === undefined) {
-                    return false;
-                }
-                if (el === null) {
-                    return false;
-                }
-                //noinspection JSUnresolvedVariable
-                if (el === true || el.isTrue) {
-                    return false;
-                }
-                //noinspection JSUnresolvedVariable
-                if (el === false || el.isFalse) {
-                    alwaysFalse = true;
-                }
-                return true;
-            });
-
-            if (alwaysFalse) {
-                return constant(false);
-            }
-
-            if (optimizedArgs.length === 0) {
-                return constant(true);
-            }
-
-            f = function(r, context) {
-                var i;
-                var someUndefined = false;
-                for (i = 0; i < optimizedArgs.length; i += 1) {
-                    var x = calc(optimizedArgs[i], r, context);
-                    if (x === false) {
-                        return false;
-                    }
-                    if (x === undefined) {
-                        someUndefined = true;
-                    }
-                }
-                if (someUndefined) {
-                    return undefined;
-                }
-                return true;
-            };
-            f.toString = function() {
-                return 'and(' + arrayToString(a) + ')';
-            };
-
-            f.myName = 'and';
-            f.myArguments = arguments;
-
-            var toSql = function(formatter, context) {
-                //noinspection JSUnresolvedFunction
-                return formatter.joinAnd(_.map(optimizedArgs, function(v) {
-                    //noinspection JSUnresolvedFunction
-                    return formatter.toSql(v, context);
-                }));
-            };
-
-            return toSqlFun(f, toSql);
-        }
-
 
         /**
          * Compares a set of keys of an object with an array of values or with fields of another object
@@ -2074,6 +2104,7 @@
             lt: lt,
             le: le,
             not: not,
+            bitwiseNot: bitwiseNot,
             isNullOrEq: isNullOrEq,
             isNullOrGt: isNullOrGt,
             isNullOrGe: isNullOrGe,
