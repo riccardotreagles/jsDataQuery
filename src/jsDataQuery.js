@@ -547,16 +547,23 @@
             }
 
             f = function(r, context) {
-                var i;
-                var someUndefined = false;
+                var i,
+                    someUndefined = false,
+                    someNull = false;
                 for (i = 0; i < optimizedArgs.length; i += 1) {
                     var x = calc(optimizedArgs[i], r, context);
                     if (x === false) {
                         return false;
                     }
+                    if (x === null) {
+                        someNull = true;
+                    }
                     if (x === undefined) {
                         someUndefined = true;
                     }
+                }
+                if (someNull) {
+                    return null;
                 }
                 if (someUndefined) {
                     return undefined;
@@ -626,15 +633,22 @@
 
             f = function (r, context) {
                 var i,
-                    someUndefined = false;
+                    someUndefined = false,
+                    someNull = false;
                 for (i = 0; i < optimizedArgs.length; i += 1) {
                     var x = calc(optimizedArgs[i], r, context);
                     if (x === true) {
                         return true;
                     }
+                    if (x === null) {
+                        someNull = true;
+                    }
                     if (x === undefined) {
                         someUndefined = true;
                     }
+                }
+                if (someNull) {
+                    return null;
                 }
                 if (someUndefined) {
                     return undefined;
