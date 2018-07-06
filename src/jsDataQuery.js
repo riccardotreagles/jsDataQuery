@@ -1136,59 +1136,6 @@
             return toSqlFun(f, toSql);
         }
 
-
-        /**
-         * checks if expr1 is in the array list
-         * @method isIn
-         * @param {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param {(sqlFun|object)[]} list  Array or function that evaluates into an array
-         * @returns {sqlFun}
-         */
-        function isIn(expr1, list) {
-            var expr = autofield(expr1),
-                f = function(r, context) {
-                    var v = calc(expr, r, context), l;
-                    if (v === undefined) {
-                        return undefined;
-                    }
-                    if (v === null) {
-                        return false;
-                    }
-
-                    l = calc(list, r, context);
-                    if (l === undefined) {
-                        return undefined;
-                    }
-                    if (l === null) {
-                        return false;
-                    }
-                    return (_.indexOf(l, v) >= 0);
-                };
-            f.toString = function() {
-                return 'isIn(' + expr.toString() + ',' + arrayToString(list) + ')';
-            };
-
-            f.myName = 'isIn';
-            f.myArguments = arguments;
-
-            var toSql = function(formatter, context) {
-                //noinspection JSUnresolvedFunction
-                return formatter.isIn(expr, list, context);
-            };
-            return toSqlFun(f, toSql);
-        }
-
-        /**
-         * checks if expr1 is not in the array list
-         * @method isNotIn
-         * @param {sqlFun|string|object}expr1 note: this is autofield-ed, so if you can use a field name for it
-         * @param {sqlFun[]|object[]} list {Array} Array or function that evaluates into an array
-         * @returns {sqlFun}
-         */
-        function isNotIn(expr1, list) {
-            return not(isIn(expr1, list));
-        }
-
         function toString(o) {
             if (o === undefined) {
                 return 'undefined';
@@ -1470,7 +1417,6 @@
             return toSqlFun(f, toSql);
         }
 
-
         /**
          * checks if expr1 is null or equal to expr2
          * @method isNullOrEq
@@ -1626,7 +1572,6 @@
             };
             return toSqlFun(f, toSql);
         }
-
 
         /**
          * @method substring
@@ -1984,49 +1929,6 @@
         }
 
         /**
-         * returns a functions that evaluates the sum of a list or array of values given when it is CREATED
-         * @method add
-         * @param {sqlFun[]|object[]} values
-         * @return {sqlFun}
-         */
-        function add(values) {
-            var a = values,
-                f;
-            if (!_.isArray(a)) {
-                a = [].slice.call(arguments);
-            }
-            f = function(r, context) {
-                var i,
-                    sum = null;
-                for (i = 0; i < a.length; i += 1) {
-                    var x = calc(a[i], r, context);
-                    if (x === undefined) {
-                        return undefined;
-                    }
-                    if (sum === null) {
-                        sum = x;
-                    } else {
-                        if (x !== null) {
-                            sum += x;
-                        }
-                    }
-                }
-                return sum;
-            };
-            f.toString = function() {
-                return 'add(' + arrayToString(a) + ')';
-            };
-
-            f.myName = 'add';
-            f.myArguments = arguments;
-
-            var toSql = function(formatter, context) {
-                return formatter.add(a, context);
-            };
-            return toSqlFun(f, toSql);
-        }
-
-        /**
          * returns a functions that evaluates the concatenation of a list or array of strings given when it is CREATED
          * @method concat
          * @param {sqlFun[]|object[]} values
@@ -2068,7 +1970,6 @@
             };
             return toSqlFun(f, toSql);
         }
-
 
         /**
          * Evaluates the sum of an array of element given at run time
@@ -2119,60 +2020,6 @@
                 return formatter.sum(expr, context);
             };
 
-            return toSqlFun(f, toSql);
-        }
-
-
-        /**
-         * returns a functions that evaluates the multiply of a list or array of values
-         * If some operand is 0, returns the always 0 function
-         * @method mul
-         * @param {sqlFun[]|object[]} values
-         * @return {sqlFun}
-         */
-        function mul(values) {
-            var a = values,
-                f;
-            if (!_.isArray(a)) {
-                a = [].slice.call(arguments);
-            }
-            f = function(r, context) {
-                var i,
-                    prod = null,
-                    someUndefined = false;
-                for (i = 0; i < a.length; i += 1) {
-                    var x = calc(a[i], r, context);
-                    if (x === undefined) {
-                        someUndefined = true;
-                    } else if (x === 0) {
-                        return 0;
-                    } else if (x !== null) {
-                        if (prod === null) {
-                            prod = x;
-                        } else {
-                            prod *= x;
-                        }
-                    }
-                }
-                if (someUndefined) {
-                    return undefined;
-                }
-                return prod;
-            };
-
-            f.toString = function() {
-                return 'mul(' + arrayToString(values) + ')';
-            };
-
-            f.myName = 'mul';
-            f.myArguments = arguments;
-
-            var toSql = function(formatter, context) {
-                return formatter.mul(_.map(a, function(v) {
-                    //noinspection JSUnresolvedFunction
-                    return formatter.toSql(v, context);
-                }));
-            };
             return toSqlFun(f, toSql);
         }
 
@@ -2241,6 +2088,156 @@
 
             return null;
         }
+
+        /**
+         * returns a functions that evaluates the multiply of a list or array of values
+         * If some operand is 0, returns the always 0 function
+         * @method mul
+         * @param {sqlFun[]|object[]} values
+         * @return {sqlFun}
+         */
+        function mul(values) {
+            var a = values,
+                f;
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+            f = function(r, context) {
+                var i,
+                    prod = null,
+                    someUndefined = false;
+                for (i = 0; i < a.length; i += 1) {
+                    var x = calc(a[i], r, context);
+                    if (x === undefined) {
+                        someUndefined = true;
+                    } else if (x === 0) {
+                        return 0;
+                    } else if (x !== null) {
+                        if (prod === null) {
+                            prod = x;
+                        } else {
+                            prod *= x;
+                        }
+                    }
+                }
+                if (someUndefined) {
+                    return undefined;
+                }
+                return prod;
+            };
+
+            f.toString = function() {
+                return 'mul(' + arrayToString(values) + ')';
+            };
+
+            f.myName = 'mul';
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.mul(_.map(a, function(v) {
+                    //noinspection JSUnresolvedFunction
+                    return formatter.toSql(v, context);
+                }));
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * returns a functions that evaluates the sum of a list or array of values given when it is CREATED
+         * @method add
+         * @param {sqlFun[]|object[]} values
+         * @return {sqlFun}
+         */
+        function add(values) {
+            var a = values,
+                f;
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+            f = function(r, context) {
+                var i,
+                    sum = null;
+                for (i = 0; i < a.length; i += 1) {
+                    var x = calc(a[i], r, context);
+                    if (x === undefined) {
+                        return undefined;
+                    }
+                    if (sum === null) {
+                        sum = x;
+                    } else {
+                        if (x !== null) {
+                            sum += x;
+                        }
+                    }
+                }
+                return sum;
+            };
+            f.toString = function() {
+                return 'add(' + arrayToString(a) + ')';
+            };
+
+            f.myName = 'add';
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.add(a, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * checks if expr1 is in the array list
+         * @method isIn
+         * @param {sqlFun|string|object} expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {(sqlFun|object)[]} list  Array or function that evaluates into an array
+         * @returns {sqlFun}
+         */
+        function isIn(expr1, list) {
+            var expr = autofield(expr1),
+                f = function(r, context) {
+                    var v = calc(expr, r, context), l;
+                    if (v === undefined) {
+                        return undefined;
+                    }
+                    if (v === null) {
+                        return false;
+                    }
+
+                    l = calc(list, r, context);
+                    if (l === undefined) {
+                        return undefined;
+                    }
+                    if (l === null) {
+                        return false;
+                    }
+                    return (_.indexOf(l, v) >= 0);
+                };
+            f.toString = function() {
+                return 'isIn(' + expr.toString() + ',' + arrayToString(list) + ')';
+            };
+
+            f.myName = 'isIn';
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.isIn(expr, list, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * checks if expr1 is not in the array list
+         * @method isNotIn
+         * @param {sqlFun|string|object}expr1 note: this is autofield-ed, so if you can use a field name for it
+         * @param {sqlFun[]|object[]} list {Array} Array or function that evaluates into an array
+         * @returns {sqlFun}
+         */
+        function isNotIn(expr1, list) {
+            return not(isIn(expr1, list));
+        }
+        
+        
 
         var dataQuery = {
             context: context,
