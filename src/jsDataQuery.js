@@ -872,6 +872,9 @@
                     if (v2 === undefined) {
                         return undefined;
                     }
+                    if ((v1 instanceof Date) && (v2 instanceof Date)){
+                        return  v1.valueOf() === v2.valueOf();
+                    }
                     return v1 === v2;
                 };
 
@@ -906,6 +909,10 @@
                     if (v2 === undefined) {
                         return undefined;
                     }
+                    if ((v1 instanceof Date) && (v2 instanceof Date)){
+                        return  v1.valueOf() !== v2.valueOf();
+                    }
+
                     return v1 !== v2;
                 };
             f.toString = function() {
@@ -945,6 +952,9 @@
                     }
                     if (v2 === null) {
                         return false;
+                    }
+                    if ((v1 instanceof Date) && (v2 instanceof Date)){
+                        return  v1.valueOf() < v2.valueOf();
                     }
                     return v1 < v2;
                 };
@@ -986,6 +996,10 @@
                     if (v2 === null) {
                         return false;
                     }
+                    if ((v1 instanceof Date) && (v2 instanceof Date)){
+                        return  v1.valueOf() <= v2.valueOf();
+                    }
+
                     return v1 <= v2;
                 };
             f.toString = function() {
@@ -1025,6 +1039,9 @@
                     }
                     if (v2 === null) {
                         return false;
+                    }
+                    if ((v1 instanceof Date) && (v2 instanceof Date)){
+                        return  v1.valueOf() > v2.valueOf();
                     }
 
                     return v1 > v2;
@@ -1066,7 +1083,9 @@
                     if (v2 === null) {
                         return false;
                     }
-
+                    if ((v1 instanceof Date) && (v2 instanceof Date)){
+                        return  v1.valueOf() >= v2.valueOf();
+                    }
                     return v1 >= v2;
                 };
 
@@ -1606,6 +1625,10 @@
                     if (isNullOrUndefined(r[field]) || isNullOrUndefined(value)) {
                         return false;
                     }
+                    if ((r[field] instanceof Date) && (value instanceof Date)){
+                        return  r[field].valueOf() === value.valueOf();
+                    }
+
                     if (r[field] !== value) {
                         return false;
                     }
