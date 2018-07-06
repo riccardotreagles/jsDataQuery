@@ -154,9 +154,6 @@
         }
 
 
-
-
-
         /**
          * Compare function provider to help building conditions that can be applyed both to collections,
          *  using the returned function as a filter, or to a database, using the toSql() method
@@ -2251,6 +2248,27 @@
                 a = [].slice.call(arguments);
             }
 
+            f = function(r, context) {
+                var outputList = [],
+                    someNull = false,
+                    i;
+                
+                for (i = 0; i < a.length; i += 1) {
+                    var x = calc(a[i], r, context);
+                    if (x === undefined) {
+                        return undefined;
+                    }
+                    if (isNull(x)) {
+                        someNull = true;
+                    }
+                    outputList.push(x); 
+                }
+                if (someNull) {
+                    return null;
+                }
+                return outputList;
+            };
+
             f.toString = function() {
                 return '(' + arrayToString(values) + ')';
             };
@@ -2258,14 +2276,12 @@
             f.myName = 'list';
             f.myArguments = arguments;
 
-            /*
             var toSql = function(formatter, context) {
-                return formatter.mul(_.map(a, function(v) {
+                return formatter.list(_.map(a, function(v) {
                     //noinspection JSUnresolvedFunction
                     return formatter.toSql(v, context);
                 }));
             };
-            */
             return toSqlFun(f, toSql);
         }
 
