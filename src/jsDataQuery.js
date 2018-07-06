@@ -1627,6 +1627,7 @@
                     }
                     if ((r[field] instanceof Date) && (value instanceof Date)){
                         if (r[field].valueOf() !== value.valueOf()) return false;
+                        continue;
                     }
 
                     if (r[field] !== value) {
