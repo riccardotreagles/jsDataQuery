@@ -2237,25 +2237,54 @@
             return not(isIn(expr1, list));
         }
         
-        
+        /**
+         * returns an array list from the parameters if all the parameters are legal.
+         * Oterwise it returns undefined or null.
+         * @method list
+         * @param {sqlFun[]|object[]} values
+         * @return {sqlFun}
+         */
+        function list(values) {
+            var a = values,
+                f;
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+
+            f.toString = function() {
+                return '(' + arrayToString(values) + ')';
+            };
+
+            f.myName = 'list';
+            f.myArguments = arguments;
+
+            /*
+            var toSql = function(formatter, context) {
+                return formatter.mul(_.map(a, function(v) {
+                    //noinspection JSUnresolvedFunction
+                    return formatter.toSql(v, context);
+                }));
+            };
+            */
+            return toSqlFun(f, toSql);
+        }
+
 
         var dataQuery = {
             context: context,
             calc: calc,
-            add: add,
+            field: field,
             concat: concat,
+            sum: sum,
             sub: sub,
             div: div,
             minus: minus,
-            mul: mul,
             mcmp: mcmp,
             mcmpLike: mcmpLike,
             mcmpEq: mcmpEq,
             isNull: isNull,
             isNotNull: isNotNull,
             constant: constant,
-            
-            field: field,
             eq: eq,
             ne: ne,
             gt: gt,
@@ -2276,8 +2305,6 @@
             bitwiseXor : bitwiseXor,
             bitClear: bitClear,
             bitSet: bitSet,
-            isIn: isIn,
-            isNotIn: isNotIn,
             distinctVal: distinctVal,
             distinct: distinct,
             like: like,
@@ -2285,10 +2312,14 @@
             testMask: testMask,
             max: max,
             min: min,
+            isIn: isIn,
+            isNotIn: isNotIn,
+            add: add,
+            mul: mul,
+            list : list,
             substring: substring,
             convertToInt: convertToInt,
             convertToString: convertToString,
-            sum: sum,
             coalesce: coalesce,
             toObject: toObject,
             fromObject: fromObject,
