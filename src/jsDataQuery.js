@@ -1528,7 +1528,7 @@
                     return false;
                 }
                 if (el === null) {
-                    return true;
+                    return false;
                 }
                 //noinspection JSUnresolvedVariable
                 if (el === true || el.isTrue) {

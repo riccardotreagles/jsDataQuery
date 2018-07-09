@@ -435,7 +435,7 @@ describe('DataQuery functions', function () {
         it('AND of a series of function in an undefined context not always gives false', function () {
             var xx = {a: 'AABBCC', q: '1'},
                 f = $q.and($q.like('a', 'AAB_CC'), $q.eq($q.constant(2), $q.add($q.field('a'), $q.constant(1))), undefined);
-            expect(f()).toBeUndefined();
+            expect(f()).toBeFalsy();
         });
     });
 
@@ -473,7 +473,7 @@ describe('DataQuery functions', function () {
         it('OR of a series of function in an undefined context not always gives true', function () {
             var xx = {a: 'AABBCC', q: '1'},
                 f = $q.or($q.like('a', 'AAB_CC'), $q.eq($q.constant(2), $q.add($q.field('a'), $q.constant(1))), undefined);
-            expect(f()).toBeUndefined();
+            expect(f()).toBeFalsy();
         });
     });
 
