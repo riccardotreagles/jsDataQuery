@@ -437,6 +437,59 @@ describe('DataQuery functions', function () {
                 f = $q.and($q.like('a', 'AAB_CC'), $q.eq($q.constant(2), $q.add($q.field('a'), $q.constant(1))), undefined);
             expect(f()).toBeFalsy();
         });
+
+        it('and of a series of function including one null and one false gives false', function () {
+            var xx = {a: 'AABBCC', q: '1'},
+                f = $q.and($q.like('a', 'AAB_CC'), $q.eq('q', 1), null, $q.constant(false));
+            expect(f.isFalse).toBe(true);
+        });
+
+        it('and of a series of function including one null and one false gives false (by array)', function () {
+            var xx = {a: 'AABBCC', q: '1'},
+                cond1 = $q.like('a', 'AAB_CC'),
+                cond2 = $q.eq('q', 1),
+                cond3 = $q.constant(false),
+                f = $q.and([cond1, cond2, null, cond3]);
+            expect(f.isFalse).toBe(true);
+            cond3 = $q.constant(true);
+            expect(f.isFalse).toBe(true);
+
+        });
+
+        it('and of a series of function including one null and one dinamically-false gives false', function () {
+            var xx = {a: 'AABBCC', q: '1'},
+                f = $q.and($q.like('a', 'AAB_CC'), $q.eq('q', 2), null);
+            expect(f(xx)).toBe(false);
+        });
+
+        it('and of a series of function including one null and one dinamically-false gives false (by array)', function () {
+            var xx = {a: 'AABBCC', q: '1'},
+                cond1 = $q.like('a', 'AAB_CC'),
+                cond2 = $q.eq('q', 2),
+                f = $q.and([cond1, cond2, null]);
+            expect(f(xx)).toBe(false);
+            cond2 = $q.eq('q', '1');
+            expect(f(xx)).toBe(false);
+        });
+
+        it('and of a series of function in a null context with an always false function gives false', function () {
+            var xx = {a: 'AABBCC', q: '1'},
+                f = $q.and($q.like('a', 'AAB_CC'), $q.eq($q.constant('q'), 2), null);
+            expect(f()).toBe(false);
+        });
+
+        it('AND of a series of function in a null context with an always false function gives false', function () {
+            var xx = {a: 'AABBCC', q: '1'},
+                f = $q.and($q.like('a', 'AAB_CC'), $q.eq($q.constant(2), $q.add($q.constant(3), $q.constant(1))), null);
+            expect(f()).toBe(false);
+        });
+
+        it('AND of a series of function in a null context with an always false function gives false constant fun', function () {
+            var xx = {a: 'AABBCC', q: '1'},
+                f = $q.and($q.like('a', 'AAB_CC'), $q.eq($q.constant(2), $q.add($q.constant(3), $q.constant(1))), null);
+            expect(f.isFalse).toBe(true);
+        });
+
     });
 
     describe('concatenation with OR', function () {
@@ -475,6 +528,31 @@ describe('DataQuery functions', function () {
                 f = $q.or($q.like('a', 'AAB_CC'), $q.eq($q.constant(2), $q.add($q.field('a'), $q.constant(1))), undefined);
             expect(f()).toBeFalsy();
         });
+
+        it('OR of a series of function including one null and one true gives true', function () {
+            var xx = {a: 'AABBCC', q: '1'},
+                f = $q.or($q.like('a', 'AAB_CC'), $q.eq('q', 1), null, $q.constant(true));
+            expect(f.isTrue).toBe(true);
+        });
+
+        it('OR of a series of function in a null context with an always true function gives true', function () {
+            var xx = {a: 'AABBCC', q: '1'},
+                f = $q.or($q.like('a', 'AAB_CC'), $q.eq($q.constant(2), $q.add($q.constant(1), $q.constant(1))), null);
+            expect(f()).toBe(true);
+        });
+
+        it('OR of a series of function in a null context with an always true function gives the true constant function', function () {
+            var xx = {a: 'AABBCC', q: '1'},
+                f = $q.or($q.like('a', 'AAB_CC'), $q.eq($q.constant(2), $q.add($q.constant(1), $q.constant(1))), null);
+            expect(f.isTrue).toBe(true);
+        });
+
+        it('OR of a series of function in a null context not always gives true', function () {
+            var xx = {a: 'AABBCC', q: '1'},
+                f = $q.or($q.like('a', 'AAB_CC'), $q.eq($q.constant(2), $q.add($q.field('a'), $q.constant(1))), null);
+            expect(f()).toBeFalsy();
+        });
+
     });
 
     describe('min, max functions', function () {
@@ -656,6 +734,26 @@ describe('DataQuery functions', function () {
             expect(obj).not.toBe(null);
         });
 
+        it('$q.toObject should return a composed expression stringified', function () {
+            var x = {a: 1, b: 2},
+                f = $q.bitwiseAnd('a', $q.bitwiseNot('b')),
+                obj = $q.toObject(f);
+            expect(JSON.stringify(obj)).toBe(
+                '{"name":"bitwiseAnd","args":[{"value":"a"},{"name":"bitwiseNot","args":[{"value":"b"}]}]}'
+            );
+        });
+
+        it('$q.toObject should return a list of expressions stringified', function () {
+            var x = {a: false, b: true, c:false},                
+                expr1 = $q.not('a'),
+                expr2 = $q.or('a', $q.field('b')),
+                f = $q.list(expr1, expr2),
+                obj = $q.toObject(f);
+            expect(JSON.stringify(obj)).toBe(
+                '{"name":"list","args":[{"name":"not","args":[{"value":"a"}]},{"name":"or","args":[{"value":"a"},{"name":"field","args":[{"value":"b"}]}]}]}'
+            )
+        });
+
     });
 
     describe('fromObject should convert a plain object to a DataQuery', function () {
@@ -677,6 +775,12 @@ describe('DataQuery functions', function () {
 
         it('$q.fromObject should return a function', function () {
             var obj = {"name": "sub", "args": [{"value": 15}, {"name": "constant", "args": [{"value": 10}]}]},
+                f = $q.fromObject(obj);
+            expect(f).toEqual(jasmine.any(Function));
+        });
+
+        it('$q.fromObject with a list object should return a function', function () {
+            var obj = {"name":"list","args":[{"name":"field","args":[{"value":"a"}]},{"name":"field","args":[{"value":"b"}]}]},
                 f = $q.fromObject(obj);
             expect(f).toEqual(jasmine.any(Function));
         });
@@ -706,6 +810,220 @@ describe('DataQuery functions', function () {
             expect(a).toEqual(b);
         });
 
+        it('Coherence check with lists', function () {
+            var x = {a: false, b: true, c:false},                
+                expr1 = $q.not('a'),
+                expr2 = $q.or($q.field('a'), $q.field('b')),
+                expr3 = $q.and($q.field('b'), $q.field('c')),
+                f = $q.list(expr1, expr2, expr3),
+                a = f(),
+                obj = $q.toObject(f),
+                g = $q.fromObject(obj),
+                b = g();
+            expect(a).toEqual(b);
+        });
+
+    });
+
+    describe('list', function () {
+        it('$q.list should be a function', function () {
+            expect($q.list).toEqual(jasmine.any(Function));
+        });
+
+        it('$q.list should return a function', function () {
+            var x = 1,
+                f = $q.list(x);
+            expect(f).toEqual(jasmine.any(Function));
+        });
+
+        it('list should return an array with length equal to number of operands', function () {
+            var x = {a: false, b: true, c:false},                
+                expr1 = $q.not('a'),
+                expr2 = $q.or($q.field('a'), $q.field('b')),
+                expr3 = $q.and($q.field('b'), $q.field('c')),
+                f = $q.list(expr1, expr2, expr3);
+            expect(f(x).length).toBe(3);
+        });
+    });
+
+    describe('bitwiseNot', function () {
+        it('$q.bitwiseNot should be a function', function () {
+            expect($q.bitwiseNot).toEqual(jasmine.any(Function));
+        });
+
+        it('$q.bitwiseNot should return a function', function () {
+            var x = 1,
+                f = $q.bitwiseNot(x);
+            expect(f).toEqual(jasmine.any(Function));
+        });
+
+        it('$q.bitwiseNot of a constant should return ~(constant)', function () {
+            var x = 1,
+                f = $q.bitwiseNot(x);
+            expect(f({})).toBe(-2);
+            x = 5;
+            expect(f({})).toBe(-2);
+        });
+
+        it('$q.bitwiseNot of an operand should return ~(operand)', function () {
+            var x = {a: 1, b: 2},
+                f = $q.bitwiseNot($q.field('a'), 1);
+            expect(f(x)).toBe(-2);
+            x.a = 5;
+            expect(f(x)).toBe(-6);
+            x.a = true;
+            expect(f(x)).toBeFalsy();
+            x.a = false;
+            expect(f(x)).toBeTruthy();
+            x.a = null;
+            expect(f(x)).toBeNull();
+            x.a = undefined;
+            expect(f(x)).toBeUndefined();
+        });
+    });
+
+    describe('bitwiseAnd', function () {
+        it('$q.bitwiseAnd should be a function', function () {
+            expect($q.bitwiseAnd).toEqual(jasmine.any(Function));
+        });
+
+        it('$q.bitwiseAnd should return a function', function () {
+            var x = 1,
+                y = 2,
+                f = $q.bitwiseAnd(x, y);
+            expect(f).toEqual(jasmine.any(Function));
+        });
+
+        it('bitwiseAnd of same value should return same value', function () {
+            var x = {a: 3, b: 3},
+                y = {a: 4, b: 4},
+                f = $q.bitwiseAnd($q.field('a'), $q.field('b'));
+            expect(f(x)).toBe(3);
+            expect(f(y)).toBe(4);
+        });
+
+        it('bitwiseAnd works for multiple values', function () {
+            var x = {a: 1, b: 2, c: 3},
+                operand1 = $q.field('a'),
+                operand2 = $q.field('b'),
+                operand3 = $q.field('c'),
+                f = $q.bitwiseAnd(operand1, operand2, operand3);
+            expect(f(x)).toBe(0);
+        });
+
+        it('bitwiseAnd works for multiple value (by array)', function () {
+            var x = {a: 1, b: 2, c: 3},
+                operand1 = $q.field('a'),
+                operand2 = $q.field('b'),
+                operand3 = $q.field('c'),
+                f = $q.bitwiseAnd(operand1, operand2, operand3);
+            expect(f(x)).toBe(0);
+        });
+
+        it('bitwiseAnd works for composite bitwise expressions', function () {
+            var x = {a: 1, b: 2, c: 3},
+                operand1 = $q.bitwiseNot('a'),
+                operand2 = $q.bitwiseOr($q.field('a'), $q.field('b')),
+                operand3 = $q.bitwiseOr($q.field('b'), $q.field('c')),
+                f = $q.bitwiseOr(operand1, operand2, operand3);
+            expect(f(x)).toBe(-1);
+        });
+    });
+
+    describe('bitwiseOr', function () {
+        it('$q.bitwiseOr should be a function', function () {
+            expect($q.bitwiseOr).toEqual(jasmine.any(Function));
+        });
+
+        it('$q.bitwiseOr should return a function', function () {
+            var x = 1,
+                y = 2,
+                f = $q.bitwiseOr(x, y);
+            expect(f).toEqual(jasmine.any(Function));
+        });
+
+        it('bitwiseOr of same value should return same value', function () {
+            var x = {a: 3, b: 3},
+                y = {a: 4, b: 4},
+                f = $q.bitwiseOr($q.field('a'), $q.field('b'));
+            expect(f(x)).toBe(3);
+            expect(f(y)).toBe(4);
+        });
+
+        it('bitwiseOr works for multiple values', function () {
+            var x = {a: 1, b: 2, c: 3},
+                operand1 = $q.field('a'),
+                operand2 = $q.field('b'),
+                operand3 = $q.field('c'),
+                f = $q.bitwiseOr(operand1, operand2, operand3);
+            expect(f(x)).toBe(3);
+        });
+
+        it('bitwiseOr works for multiple value (by array)', function () {
+            var x = {a: 1, b: 2, c: 3},
+                operand1 = $q.field('a'),
+                operand2 = $q.field('b'),
+                operand3 = $q.field('c'),
+                f = $q.bitwiseOr(operand1, operand2, operand3);
+            expect(f(x)).toBe(3);
+        });
+
+        it('bitwiseOr works for composite bitwise expressions', function () {
+            var x = {a: 1, b: 2, c: 3},
+                operand1 = $q.bitwiseNot('a'),
+                operand2 = $q.bitwiseAnd($q.field('a'), $q.field('b')),
+                operand3 = $q.bitwiseAnd($q.field('b'), $q.field('c')),
+                f = $q.bitwiseOr(operand1, operand2, operand3);
+            expect(f(x)).toBe(-2);
+        });
+    });
+
+    describe('bitwiseXor', function () {
+        it('$q.bitwiseXor should be a function', function () {
+            expect($q.bitwiseXor).toEqual(jasmine.any(Function));
+        });
+
+        it('$q.bitwiseXor should return a function', function () {
+            var x = 1,
+                y = 2,
+                f = $q.bitwiseXor(x, y);
+            expect(f).toEqual(jasmine.any(Function));
+        });
+
+        it('bitwiseXor of same value should return zero', function () {
+            var x = {a: 3, b: 3},
+                y = {a: 4, b: 4},
+                f = $q.bitwiseXor($q.field('a'), $q.field('b'));
+            expect(f(x)).toBe(0);
+            expect(f(y)).toBe(0);
+        });
+
+        it('bitwiseXor works for multiple values', function () {
+            var x = {a: 1, b: 2, c: 3},
+                operand1 = $q.field('a'),
+                operand2 = $q.field('b'),
+                operand3 = $q.field('c'),
+                f = $q.bitwiseXor(operand1, operand2, operand3);
+            expect(f(x)).toBe(0);
+        });
+
+        it('bitwiseXor works for multiple value (by array)', function () {
+            var x = {a: 1, b: 2, c: 3},
+                operand1 = $q.field('a'),
+                operand2 = $q.field('b'),
+                operand3 = $q.field('c'),
+                f = $q.bitwiseXor(operand1, operand2, operand3);
+            expect(f(x)).toBe(0);
+        });
+
+        it('bitwiseXor works for composite bitwise expressions', function () {
+            var x = {a: 1, b: 2, c: 3},
+                operand1 = $q.bitwiseNot('a'),
+                operand2 = $q.bitwiseAnd($q.field('b'), $q.field('c')),
+                operand3 = $q.bitwiseOr($q.field('b'), $q.field('c')),
+                f = $q.bitwiseXor(operand1, operand2, operand3);
+            expect(f(x)).toBe(-1);
+        });
     });
 
 });
