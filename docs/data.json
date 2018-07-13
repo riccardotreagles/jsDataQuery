@@ -739,7 +739,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 891,
+            "line": 894,
             "description": "checks if expr1 evaluates different from expr2",
             "itemtype": "method",
             "name": "ne",
@@ -764,7 +764,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 925,
+            "line": 932,
             "description": "checks if expr1 evaluates less than from expr2",
             "itemtype": "method",
             "name": "lt",
@@ -789,7 +789,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 964,
+            "line": 974,
             "description": "checks if expr1 evaluates less than or equal to from expr2",
             "itemtype": "method",
             "name": "le",
@@ -814,7 +814,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1005,
+            "line": 1019,
             "description": "checks if expr1 evaluates greater than expr2",
             "itemtype": "method",
             "name": "gt",
@@ -839,7 +839,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1045,
+            "line": 1062,
             "description": "checks if expr1 evaluates greater than or equal to expr2",
             "itemtype": "method",
             "name": "ge",
@@ -864,7 +864,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1087,
+            "line": 1106,
             "description": "checks if at least one of supplied expression evaluates to a truthy value",
             "itemtype": "method",
             "name": "or",
@@ -884,7 +884,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1164,
+            "line": 1190,
             "description": "return the first object not null in the  array parameter",
             "params": [
                 {
@@ -902,7 +902,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1206,
+            "line": 1232,
             "description": "checks if expr1 is null or equal to expr2",
             "itemtype": "method",
             "name": "isNullOrEq",
@@ -927,7 +927,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1218,
+            "line": 1244,
             "description": "checks if expr1 is null or greater than expr2",
             "itemtype": "method",
             "name": "isNullOrGt",
@@ -952,7 +952,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1230,
+            "line": 1256,
             "description": "checks if expr1 is null or greater than or equal to expr2",
             "itemtype": "method",
             "name": "isNullOrGe",
@@ -975,7 +975,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1242,
+            "line": 1268,
             "description": "checks if expr1 is null or less than expr2",
             "itemtype": "method",
             "name": "isNullOrLt",
@@ -1000,7 +1000,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1254,
+            "line": 1280,
             "description": "checks if expr1 is null or less than or equal to expr2",
             "itemtype": "method",
             "name": "isNullOrLe",
@@ -1025,7 +1025,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1266,
+            "line": 1292,
             "description": "Evaluates the maximum value of an expression in a table. If any undefined is found, return undefined.\nNull are skipped. If all is null return null",
             "itemtype": "method",
             "name": "max",
@@ -1045,7 +1045,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1314,
+            "line": 1340,
             "description": "Evaluates the minimum value of an expression in a table. If any undefined is found, return undefined.\nNull are skipped. If all is null return null",
             "itemtype": "method",
             "name": "min",
@@ -1065,7 +1065,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1363,
+            "line": 1388,
             "itemtype": "method",
             "name": "substring",
             "params": [
@@ -1094,7 +1094,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1417,
+            "line": 1442,
             "description": "Converts a generic expression into an integer",
             "itemtype": "method",
             "name": "convertToInt",
@@ -1114,7 +1114,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1452,
+            "line": 1477,
             "description": "Converts a generic expression into a string",
             "itemtype": "method",
             "name": "convertToString",
@@ -1139,7 +1139,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1488,
+            "line": 1513,
             "description": "checks if all supplied expression evaluate to truthy values",
             "itemtype": "method",
             "name": "and",
@@ -1159,7 +1159,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1563,
+            "line": 1595,
             "description": "Compares a set of keys of an object with an array of values or with fields of another object\n values can be an array or an object",
             "itemtype": "method",
             "name": "mcmp",
@@ -1190,7 +1190,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1643,
+            "line": 1680,
             "description": "Compares a set of keys of an object with an array of values or with fields of another object",
             "itemtype": "method",
             "name": "mcmpLike",
@@ -1216,7 +1216,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1674,
+            "line": 1711,
             "description": "Compares a set of keys of an object with an array of values or with fields of another object",
             "itemtype": "method",
             "name": "mcmpEq",
@@ -1242,7 +1242,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1704,
+            "line": 1741,
             "description": "returns a functions that does a subtraction",
             "itemtype": "method",
             "name": "sub",
@@ -1267,7 +1267,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1749,
+            "line": 1786,
             "description": "returns a functions that does a division",
             "itemtype": "method",
             "name": "div",
@@ -1292,7 +1292,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1793,
+            "line": 1831,
             "description": "returns a functions that evaluates the sum of a list or array of values given when it is CREATED",
             "itemtype": "method",
             "name": "add",
@@ -1312,7 +1312,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1836,
+            "line": 1879,
             "description": "returns a functions that evaluates the concatenation of a list or array of strings given when it is CREATED",
             "itemtype": "method",
             "name": "concat",
@@ -1332,7 +1332,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1880,
+            "line": 1923,
             "description": "Evaluates the sum of an array of element given at run time",
             "itemtype": "method",
             "name": "sum",
@@ -1352,7 +1352,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1933,
+            "line": 1976,
             "description": "returns a functions that evaluates the multiply of a list or array of values\nIf some operand is 0, returns the always 0 function",
             "itemtype": "method",
             "name": "mul",
@@ -1372,7 +1372,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 1992,
+            "line": 2035,
             "description": "Converts a sqlFun to an plain object.",
             "params": [
                 {
@@ -1390,7 +1390,7 @@
         },
         {
             "file": "src\\jsDataQuery.js",
-            "line": 2017,
+            "line": 2060,
             "description": "Converts an object back to a sqlFun",
             "params": [
                 {
@@ -1402,6 +1402,127 @@
             "return": {
                 "description": "",
                 "type": "SqlFun|sqlFun[]|object|object[]"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 2095,
+            "description": "returns an array list from the parameters if all the parameters are legal.\nOterwise it returns undefined or null.",
+            "itemtype": "method",
+            "name": "list",
+            "params": [
+                {
+                    "name": "values",
+                    "description": "",
+                    "type": "SqlFun[]|object[]"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 2147,
+            "itemtype": "method",
+            "name": "bitwiseNot",
+            "params": [
+                {
+                    "name": "}",
+                    "description": "expression note: this is autofield-ed, so if you can use a field name for it",
+                    "type": "SqlFun|string|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 2177,
+            "itemtype": "method",
+            "name": "bitwiseAnd",
+            "params": [
+                {
+                    "name": "arr",
+                    "description": "array or list of expression",
+                    "type": "SqlFun[]|object[]"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 2246,
+            "itemtype": "method",
+            "name": "bitwiseOr",
+            "params": [
+                {
+                    "name": "arr",
+                    "description": "array or list of expression",
+                    "type": "SqlFun[]|object[]"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 2315,
+            "itemtype": "method",
+            "name": "bitwiseXor",
+            "params": [
+                {
+                    "name": "arr",
+                    "description": "array or list of expression",
+                    "type": "SqlFun[]|object[]"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
+            },
+            "class": "jsDataQuery",
+            "module": "jsDataQuery"
+        },
+        {
+            "file": "src\\jsDataQuery.js",
+            "line": 2385,
+            "description": "returns a functions that does the modulus",
+            "itemtype": "method",
+            "name": "modulus",
+            "params": [
+                {
+                    "name": "expr1",
+                    "description": "",
+                    "type": "SqlFun|string|object"
+                },
+                {
+                    "name": "expr2",
+                    "description": "",
+                    "type": "SqlFun|object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "SqlFun"
             },
             "class": "jsDataQuery",
             "module": "jsDataQuery"
@@ -1442,71 +1563,71 @@
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:891"
+            "line": " src\\jsDataQuery.js:894"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:925"
+            "line": " src\\jsDataQuery.js:932"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:964"
+            "line": " src\\jsDataQuery.js:974"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:1005"
+            "line": " src\\jsDataQuery.js:1019"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:1045"
+            "line": " src\\jsDataQuery.js:1062"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:1087"
+            "line": " src\\jsDataQuery.js:1106"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:1164"
+            "line": " src\\jsDataQuery.js:1190"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:1218"
+            "line": " src\\jsDataQuery.js:1244"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:1254"
+            "line": " src\\jsDataQuery.js:1280"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:1266"
+            "line": " src\\jsDataQuery.js:1292"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:1314"
+            "line": " src\\jsDataQuery.js:1340"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:1363"
+            "line": " src\\jsDataQuery.js:1388"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:1417"
+            "line": " src\\jsDataQuery.js:1442"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:1452"
+            "line": " src\\jsDataQuery.js:1477"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:1880"
+            "line": " src\\jsDataQuery.js:1923"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:1992"
+            "line": " src\\jsDataQuery.js:2035"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src\\jsDataQuery.js:2017"
+            "line": " src\\jsDataQuery.js:2060"
         },
         {
             "message": "Missing item type",
@@ -1538,15 +1659,15 @@
         },
         {
             "message": "Missing item type\nreturn the first object not null in the  array parameter",
-            "line": " src\\jsDataQuery.js:1164"
+            "line": " src\\jsDataQuery.js:1190"
         },
         {
             "message": "Missing item type\nConverts a sqlFun to an plain object.",
-            "line": " src\\jsDataQuery.js:1992"
+            "line": " src\\jsDataQuery.js:2035"
         },
         {
             "message": "Missing item type\nConverts an object back to a sqlFun",
-            "line": " src\\jsDataQuery.js:2017"
+            "line": " src\\jsDataQuery.js:2060"
         }
     ]
 }

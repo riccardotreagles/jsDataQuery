@@ -255,7 +255,7 @@
          * @return {boolean} true if o is null or undefined
          */
         function isNullOrUndefined(o) {
-            return _.isUndefined(o) || _.isNull(o);
+            return _.isNull(o) || _.isUndefined(o);
         }
 
 
@@ -927,7 +927,7 @@
         function isNotIn(expr1, list) {
             return not(isIn(expr1, list));
         }
-
+       
         function toString(o) {
             if (o === undefined) {
                 return &#x27;undefined&#x27;;
@@ -955,6 +955,9 @@
                     v2 = calc(expr2, r, context);
                     if (v2 === undefined) {
                         return undefined;
+                    }
+                    if ((v1 instanceof Date) &amp;&amp; (v2 instanceof Date)){
+                        return  v1.valueOf() === v2.valueOf();
                     }
                     return v1 === v2;
                 };
@@ -990,6 +993,10 @@
                     if (v2 === undefined) {
                         return undefined;
                     }
+                    if ((v1 instanceof Date) &amp;&amp; (v2 instanceof Date)){
+                        return  v1.valueOf() !== v2.valueOf();
+                    }
+
                     return v1 !== v2;
                 };
             f.toString = function() {
@@ -1029,6 +1036,9 @@
                     }
                     if (v2 === null) {
                         return false;
+                    }
+                    if ((v1 instanceof Date) &amp;&amp; (v2 instanceof Date)){
+                        return  v1.valueOf() &lt; v2.valueOf();
                     }
                     return v1 &lt; v2;
                 };
@@ -1070,6 +1080,10 @@
                     if (v2 === null) {
                         return false;
                     }
+                    if ((v1 instanceof Date) &amp;&amp; (v2 instanceof Date)){
+                        return  v1.valueOf() &lt;= v2.valueOf();
+                    }
+
                     return v1 &lt;= v2;
                 };
             f.toString = function() {
@@ -1109,6 +1123,9 @@
                     }
                     if (v2 === null) {
                         return false;
+                    }
+                    if ((v1 instanceof Date) &amp;&amp; (v2 instanceof Date)){
+                        return  v1.valueOf() &gt; v2.valueOf();
                     }
 
                     return v1 &gt; v2;
@@ -1150,7 +1167,9 @@
                     if (v2 === null) {
                         return false;
                     }
-
+                    if ((v1 instanceof Date) &amp;&amp; (v2 instanceof Date)){
+                        return  v1.valueOf() &gt;= v2.valueOf();
+                    }
                     return v1 &gt;= v2;
                 };
 
@@ -1187,7 +1206,7 @@
                         return false;
                     }
                     if (el === null) {
-                        return false;
+                        return true;
                     }
 
                     if (el === false) {
@@ -1213,11 +1232,15 @@
 
             f = function (r, context) {
                 var i,
-                    someUndefined = false;
+                    someUndefined = false,
+                    someNull = false;
                 for (i = 0; i &lt; optimizedArgs.length; i += 1) {
                     var x = calc(optimizedArgs[i], r, context);
                     if (x === true) {
                         return true;
+                    }
+                    if (x === null) {
+                        someNull = true;
                     }
                     if (x === undefined) {
                         someUndefined = true;
@@ -1225,6 +1248,9 @@
                 }
                 if (someUndefined) {
                     return undefined;
+                }
+                if (someNull) {
+                    return null;
                 }
                 return false;
             };
@@ -1244,7 +1270,7 @@
             };
             return toSqlFun(f, toSql);
         }
-
+      
         /**
          * return the first object not null in the  array parameter
          * @param {sqlFun[]|object[]} arr
@@ -1443,7 +1469,6 @@
             return toSqlFun(f, toSql);
         }
 
-
         /**
          * @method substring
          * @param {sqlFun|string|object} expr1
@@ -1609,12 +1634,16 @@
             }
 
             f = function(r, context) {
-                var i;
-                var someUndefined = false;
+                var i,
+                    someUndefined = false,
+                    someNull = false;
                 for (i = 0; i &lt; optimizedArgs.length; i += 1) {
                     var x = calc(optimizedArgs[i], r, context);
                     if (x === false) {
                         return false;
+                    }
+                    if (x === null) {
+                        someNull = true;
                     }
                     if (x === undefined) {
                         someUndefined = true;
@@ -1622,6 +1651,9 @@
                 }
                 if (someUndefined) {
                     return undefined;
+                }
+                if (someNull) {
+                    return null;
                 }
                 return true;
             };
@@ -1642,7 +1674,7 @@
 
             return toSqlFun(f, toSql);
         }
-
+        
 
         /**
          * Compares a set of keys of an object with an array of values or with fields of another object
@@ -1690,6 +1722,11 @@
                     if (isNullOrUndefined(r[field]) || isNullOrUndefined(value)) {
                         return false;
                     }
+                    if ((r[field] instanceof Date) &amp;&amp; (value instanceof Date)){
+                        if (r[field].valueOf() !== value.valueOf()) return false;
+                        continue;
+                    }
+
                     if (r[field] !== value) {
                         return false;
                     }
@@ -1874,6 +1911,7 @@
             return toSqlFun(f, toSql);
         }
 
+        
         /**
          * returns a functions that evaluates the sum of a list or array of values given when it is CREATED
          * @method add
@@ -1888,19 +1926,24 @@
             }
             f = function(r, context) {
                 var i,
-                    sum = null;
+                    sum = null,
+                    someUndefined = false
                 for (i = 0; i &lt; a.length; i += 1) {
                     var x = calc(a[i], r, context);
+                    if (x === null) {
+                        return null;
+                    }
                     if (x === undefined) {
-                        return undefined;
+                        someUndefined = true;
                     }
                     if (sum === null) {
                         sum = x;
                     } else {
-                        if (x !== null) {
-                            sum += x;
-                        }
+                        sum += x;
                     }
+                }
+                if (someUndefined) {
+                    return undefined
                 }
                 return sum;
             };
@@ -1916,7 +1959,7 @@
             };
             return toSqlFun(f, toSql);
         }
-
+ 
         /**
          * returns a functions that evaluates the concatenation of a list or array of strings given when it is CREATED
          * @method concat
@@ -2033,17 +2076,17 @@
                     someUndefined = false;
                 for (i = 0; i &lt; a.length; i += 1) {
                     var x = calc(a[i], r, context);
+                    if (x === null) {
+                        return null;
+                    }
                     if (x === undefined) {
                         someUndefined = true;
-                    } else if (x === 0) {
-                        return 0;
-                    } else if (x !== null) {
-                        if (prod === null) {
-                            prod = x;
-                        } else {
-                            prod *= x;
-                        }
                     }
+                    if (prod === null) {
+                        prod = x;
+                    } else {
+                        prod *= x;
+                    }               
                 }
                 if (someUndefined) {
                     return undefined;
@@ -2066,7 +2109,7 @@
             };
             return toSqlFun(f, toSql);
         }
-
+ 
         function arrayToString(arr) {
             return &#x27;[&#x27; + _.map(arr, function(value) {
                 return toString(value);
@@ -2133,6 +2176,341 @@
             return null;
         }
 
+        /**
+         * returns an array list from the parameters if all the parameters are legal.
+         * Oterwise it returns undefined or null.
+         * @method list
+         * @param {sqlFun[]|object[]} values
+         * @return {sqlFun}
+         */
+        function list(values) {
+            var a = values,
+                f;
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+
+            f = function(r, context) {
+                var outputList = [],
+                    someNull = false,
+                    i;
+                
+                for (i = 0; i &lt; a.length; i += 1) {
+                    var x = calc(a[i], r, context);
+
+                    if (x === undefined) {
+                        return undefined;
+                    }
+                    if (x === null) {
+                        someNull = true;
+                    }
+                    outputList.push(x); 
+                }
+                if (someNull) {
+                    return null;
+                }
+                return outputList;
+            };
+
+            f.toString = function() {
+                return &#x27;(&#x27; + arrayToString(values) + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;list&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.list(_.map(a, function(v) {
+                    //noinspection JSUnresolvedFunction
+                    return formatter.toSql(v, context);
+                }));
+            };
+            return toSqlFun(f, toSql);
+        }
+   
+        /**
+         * @method bitwiseNot
+         * @param {sqlFun|string|object} }  expression note: this is autofield-ed, so if you can use a field name for it
+         * @return {sqlFun}
+         */
+        function bitwiseNot(expression) {
+            var expr = autofield(expression),
+                f = function(r, context) {
+                    var v1 = calc(expr, r, context);
+                    if (isNullOrUndefined(v1)) {
+                        return v1;
+                    }
+                    if (!!v1 === v1) { //checks if (typeof n === &#x27;boolean&#x27;)
+                        return !v1;
+                    }
+                    return ~v1;
+                };
+            f.toString = function() {
+                return &#x27;~(&#x27; + expr.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;bitwiseNot&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.bitwiseNot(expr, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * @method bitwiseAnd
+         * @param {sqlFun[]|object[]} arr array or list of expression
+         * @return {sqlFun}
+         */
+        function bitwiseAnd(arr) {
+            var a = arr,
+                f;
+            
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+
+            var optimizedArgs = _.filter(a, function(el) {
+                if (el === undefined) {
+                    return false;
+                }
+                if (el === null) {
+                    return false;
+                }
+                return true;
+            });
+
+            if (optimizedArgs.length === 0) {
+                return constant(null);
+            }
+
+            f = function(r, context) {
+                var result = null,
+                    someUndefined = false,
+                    i;
+                
+                for (i = 0; i &lt; optimizedArgs.length; i += 1) {
+                    var x = calc(optimizedArgs[i], r, context);
+                    if (x === null) {
+                        return null;
+                    }
+                    if (x === undefined) {
+                        someUndefined = true;
+                    }
+                    if (result === null) {
+                        result = x;
+                    } else {
+                        result = result &amp; x;
+                    }
+                }
+                if (someUndefined) {
+                    return undefined;
+                }
+                return result;
+            };
+
+            f.toString = function() {
+                return &#x27;&amp;(&#x27; + arrayToString(a) + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;bitwiseAnd&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.bitwiseAnd(_.map(optimizedArgs, function(v) {
+                    //noinspection JSUnresolvedFunction
+                    return formatter.toSql(v, context);
+                }));
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * @method bitwiseOr
+         * @param {sqlFun[]|object[]} arr array or list of expression
+         * @return {sqlFun}
+         */
+        function bitwiseOr(arr) {
+            var a = arr,
+                f;
+            
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+
+            var optimizedArgs = _.filter(a, function(el) {
+                if (el === undefined) {
+                    return false;
+                }
+                if (el === null) {
+                    return false;
+                }
+                return true;
+            });
+
+            if (optimizedArgs.length === 0) {
+                return constant(null);
+            }
+
+            f = function(r, context) {
+                var result = null,
+                    someUndefined = false,
+                    i;
+                
+                for (i = 0; i &lt; optimizedArgs.length; i += 1) {
+                    var x = calc(optimizedArgs[i], r, context);
+                    if (x === null) {
+                        return null;
+                    }
+                    if (x === undefined) {
+                        someUndefined = true;
+                    }
+                    if (result === null) {
+                        result = x;
+                    } else {
+                        result = result | x;
+                    }
+                }
+                if (someUndefined) {
+                    return undefined;
+                }
+                return result;
+            };
+
+            f.toString = function() {
+                return &#x27;|(&#x27; + arrayToString(a) + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;bitwiseOr&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.bitwiseOr(_.map(optimizedArgs, function(v) {
+                    //noinspection JSUnresolvedFunction
+                    return formatter.toSql(v, context);
+                }));
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        /**
+         * @method bitwiseXor
+         * @param {sqlFun[]|object[]} arr array or list of expression
+         * @return {sqlFun}
+         */
+        function bitwiseXor(arr) {
+            var a = arr,
+                f;
+            
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+
+            var optimizedArgs = _.filter(a, function(el) {
+                if (el === undefined) {
+                    return false;
+                }
+                if (el === null) {
+                    return false;
+                }
+                return true;
+            });
+
+            if (optimizedArgs.length === 0) {
+                return constant(null);
+            }
+
+            f = function(r, context) {
+                var result = null,
+                    someUndefined = false,
+                    i;
+                
+                for (i = 0; i &lt; optimizedArgs.length; i += 1) {
+                    var x = calc(optimizedArgs[i], r, context);
+                    if (x === null) {
+                        return null;
+                    }
+                    if (x === undefined) {
+                        someUndefined = true;
+                    }
+                    if (result === null) {
+                        result = x;
+                    } else {
+                        result = result ^ x;
+                    }
+                }
+                if (someUndefined) {
+                    return undefined;
+                }
+                return result;
+            };
+
+            f.toString = function() {
+                return &#x27;^(&#x27; + arrayToString(a) + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;bitwiseXor&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.bitwiseXor(_.map(optimizedArgs, function(v) {
+                    //noinspection JSUnresolvedFunction
+                    return formatter.toSql(v, context);
+                }));
+            };
+            return toSqlFun(f, toSql);
+        }
+
+        
+        /**
+         * returns a functions that does the modulus
+         * @method modulus
+         * @param {sqlFun|string|object} expr1
+         * @param {sqlFun|object} expr2
+         * @return {sqlFun}
+         */
+        function modulus(expr1, expr2) {
+            var expr = autofield(expr1),
+                f;
+            f = function(r, context) {
+                if (r === undefined) {
+                    return undefined;
+                }
+                var x = calc(expr, r, context), y;
+                if (x === undefined) {
+                    return undefined;
+                }
+                if (x === null) {
+                    return null;
+                }
+                y = calc(expr2, r, context);
+                if (y === undefined) {
+                    return undefined;
+                }
+                if (y === null) {
+                    return null;
+                }
+                return x % y;
+            };
+            f.toString = function() {
+                return &#x27;modulus(&#x27; + expr.toString() + &#x27;,&#x27; + expr2.toString() + &#x27;)&#x27;;
+            };
+
+            f.myName = &#x27;modulus&#x27;;
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.modulus(expr, expr2, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+        
+  
         var dataQuery = {
             context: context,
             calc: calc,
@@ -2181,6 +2559,12 @@
             coalesce: coalesce,
             toObject: toObject,
             fromObject: fromObject,
+            list : list,
+            bitwiseNot: bitwiseNot,
+            bitwiseAnd : bitwiseAnd,
+            bitwiseOr: bitwiseOr,
+            bitwiseXor : bitwiseXor,
+            modulus : modulus,
             myLoDash: _ //for testing purposes
         };
 

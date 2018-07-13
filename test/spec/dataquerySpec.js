@@ -340,11 +340,16 @@ describe('DataQuery functions', function () {
             expect(f(xx)).toBeTruthy();
         });
 
+        it('like with a non-string return false', function () {
+            var xx = {a: 'AABBCC', q: '1'},
+                f = $q.like('a', 5);
+            expect(f(xx)).toBeFalsy();
+        });
 
-        it('like with null return false', function () {
+        it('like with null return null', function () {
             var xx = {a: 'AABBCC', q: '1'},
                 f = $q.like('a', null);
-            expect(f(xx)).toBeFalsy();
+            expect(f(xx)).toBe(null);
         });
 
     });
@@ -576,23 +581,23 @@ describe('DataQuery functions', function () {
     });
 
     describe('add, mul, sum functions', function () {
-        it('should make the add/ mul / sum skipping nulls', function () {
+        it('should make the add/ mul / sum skipping nulls when required', function () {
             var r1 = {a: 1, b: 2, c: null},
                 r2 = {a: 2, b: 2},
                 r3 = {a: 3, b: null},
                 r4 = {a: 1, b: -1},
                 r5 = {a: null, b: null},
                 rows = [r1, r2, r3, r4, r5];
-            expect($q.mul($q.field('a'), $q.field('b'), $q.field('c'))(r1)).toBe(2);
-            expect($q.add($q.field('a'), $q.field('b'), $q.field('c'))(r1)).toBe(3);
             expect($q.sum($q.field('a'))(rows)).toBe(7);
             expect($q.mul($q.field('a'), $q.field('b'))(r2)).toBe(4);
             expect($q.sum($q.field('b'))(rows)).toBe(3);
+            expect($q.mul($q.field('a'), $q.field('b'), $q.field('c'))(r1)).toBe(null);
+            expect($q.add($q.field('a'), $q.field('b'), $q.field('c'))(r1)).toBe(null);
         });
     });
 
-    describe('sub /div / minus functions', function () {
-        it('sub/div should subtract / divide', function () {
+    describe('sub / div / modulus /minus functions', function () {
+        it('sub/div/modulus should subtract / divide /mod', function () {
             var
                 r1 = {a: 1, b: 2, c: null},
                 r2 = {a: 2, b: 2},
@@ -603,8 +608,11 @@ describe('DataQuery functions', function () {
             expect($q.div($q.field('a'), $q.field('b'))(r1)).toBe(1 / 2);
             expect($q.sub($q.field('a'), $q.field('b'))(r2)).toBe(0);
             expect($q.div($q.field('a'), $q.field('b'))(r2)).toBe(1);
+            expect($q.modulus($q.field('a'), $q.field('b'))(r1)).toBe(1);
+            expect($q.modulus($q.field('a'), $q.field('b'))(r2)).toBe(0);
             expect($q.sub($q.field('a'), $q.field('b'))(r3)).toBe(null);
             expect($q.div($q.field('a'), $q.field('b'))(r3)).toBe(null);
+            expect($q.modulus($q.field('a'), $q.field('b'))(r3)).toBe(null);
         });
 
         it('minus expr should change sign to expr', function () {

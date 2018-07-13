@@ -171,7 +171,7 @@
          * @return {boolean} true if o is null or undefined
          */
         function isNullOrUndefined(o) {
-            return _.isUndefined(o) || _.isNull(o);
+            return _.isNull(o) || _.isUndefined(o);
         }
 
 
@@ -521,19 +521,16 @@
         function bitSet(expression, nbit) {
             var expr = autofield(expression),
                 f = function(r, context) {
-                    var v1 = calc(expr, r, context), v2;
-                    if (v1 === undefined) {
+                    if (r === undefined) {
                         return undefined;
                     }
-                    if (v1 === null) {
-                        return false;
+                    var v1 = calc(expr, r, context),
+                        v2 = calc(nbit, r, context);
+                    if (v1 === null || v2 === null) {
+                        return null;
                     }
-                    v2 = calc(nbit, r, context);
-                    if (v2 === undefined) {
+                    if (v1 === undefined || v2 === undefined) {
                         return undefined;
-                    }
-                    if (v2 === null) {
-                        return false;
                     }
                     return (v1 & (1 << v2)) !== 0;
                 };
@@ -561,19 +558,17 @@
         function bitClear(expression, nbit) {
             var expr = autofield(expression),
                 f = function(r, context) {
-                    var v1 = calc(expr, r, context), v2;
-                    if (v1 === undefined) {
+                    if (r === undefined) {
                         return undefined;
                     }
-                    if (v1 === null) {
-                        return false;
+                    var v1 = calc(expr, r, context),
+                        v2 = calc(nbit, r, context);
+                    
+                    if (x === null || y === null) {
+                        return null;
                     }
-                    v2 = calc(nbit, r, context);
-                    if (v2 === undefined) {
+                    if (x === undefined || y === undefined) {
                         return undefined;
-                    }
-                    if (v2 === null) {
-                        return false;
                     }
                     return (v1 & (1 << v2)) === 0;
                 };
@@ -701,20 +696,20 @@
         function like(expr1, mask) {
             var expr = autofield(expr1),
                 f = function(r, context) {
-                    var v1 = calc(expr, r, context), v2, likeExpr;
-                    if (v1 === undefined) {
+                    var likeExpr,
+                        v1 = calc(expr, r, context),
+                        v2 = calc(mask, r, context);
+
+                    if (v1 === null || v2 === null) {
+                        return null;
+                    }
+                    if (v1 === undefined || v2 === undefined) {
                         return undefined;
                     }
-                    if (v1 === null) {
+                    if(!_.isString(v1) || !_.isString(v2)) {
                         return false;
-                    }
-                    v2 = calc(mask, r, context);
-                    if (v2 === undefined) {
-                        return undefined;
-                    }
-                    if (v2 === null) {
-                        return false;
-                    }
+                    } 
+
                     likeExpr = myRegExpEscape(v2);
                     return (new RegExp(likeExpr.replace(new RegExp('%', 'g'), ".*").replace(new RegExp('_', 'g'), ".")).exec(v1) !== null);
                 };
@@ -1125,11 +1120,7 @@
                         return true;
                     }
 
-                    if (el === false) {
-                        return false;
-                    }
-                    //noinspection JSUnresolvedVariable
-                    if (el.isFalse) {
+                    if (el === false || el.isFalse) {
                         return false;
                     }
 
@@ -1162,11 +1153,11 @@
                         someUndefined = true;
                     }
                 }
-                if (someNull) {
-                    return null;
-                }
                 if (someUndefined) {
                     return undefined;
+                }
+                if (someNull) {
+                    return null;
                 }
                 return false;
             };
@@ -1565,11 +1556,11 @@
                         someUndefined = true;
                     }
                 }
-                if (someNull) {
-                    return null;
-                }
                 if (someUndefined) {
                     return undefined;
+                }
+                if (someNull) {
+                    return null;
                 }
                 return true;
             };
@@ -1752,20 +1743,14 @@
                 if (r === undefined) {
                     return undefined;
                 }
-                var x = calc(expr, r, context), y;
-                if (x === undefined) {
-                    return undefined;
-                }
-                if (x === null) {
+                var x = calc(expr, r, context),
+                    y = calc(expr2, r, context);
+                
+                if (x === null || y === null) {
                     return null;
                 }
-
-                y = calc(expr2, r, context);
-                if (y === undefined) {
+                if (x === undefined || y === undefined) {
                     return undefined;
-                }
-                if (y === null) {
-                    return null;
                 }
                 return x - y;
             };
@@ -1797,19 +1782,14 @@
                 if (r === undefined) {
                     return undefined;
                 }
-                var x = calc(expr, r, context), y;
-                if (x === undefined) {
-                    return undefined;
-                }
-                if (x === null) {
+                var x = calc(expr, r, context),
+                    y = calc(expr2, r, context);
+
+                if (x === null || y === null) {
                     return null;
                 }
-                y = calc(expr2, r, context);
-                if (y === undefined) {
+                if (x === undefined || y === undefined) {
                     return undefined;
-                }
-                if (y === null) {
-                    return null;
                 }
                 return x / y;
             };
@@ -1842,19 +1822,24 @@
             }
             f = function(r, context) {
                 var i,
-                    sum = null;
+                    sum = null,
+                    someUndefined = false
                 for (i = 0; i < a.length; i += 1) {
                     var x = calc(a[i], r, context);
+                    if (x === null) {
+                        return null;
+                    }
                     if (x === undefined) {
-                        return undefined;
+                        someUndefined = true;
                     }
                     if (sum === null) {
                         sum = x;
                     } else {
-                        if (x !== null) {
-                            sum += x;
-                        }
+                        sum += x;
                     }
+                }
+                if (someUndefined) {
+                    return undefined
                 }
                 return sum;
             };
@@ -1987,17 +1972,17 @@
                     someUndefined = false;
                 for (i = 0; i < a.length; i += 1) {
                     var x = calc(a[i], r, context);
+                    if (x === null) {
+                        return null;
+                    }
                     if (x === undefined) {
                         someUndefined = true;
-                    } else if (x === 0) {
-                        return 0;
-                    } else if (x !== null) {
-                        if (prod === null) {
-                            prod = x;
-                        } else {
-                            prod *= x;
-                        }
                     }
+                    if (prod === null) {
+                        prod = x;
+                    } else {
+                        prod *= x;
+                    }               
                 }
                 if (someUndefined) {
                     return undefined;
@@ -2198,16 +2183,16 @@
 
             f = function(r, context) {
                 var result = null,
-                    someNull = false,
+                    someUndefined = false,
                     i;
                 
                 for (i = 0; i < optimizedArgs.length; i += 1) {
                     var x = calc(optimizedArgs[i], r, context);
-                    if (x === undefined) {
-                        return undefined;
-                    }
                     if (x === null) {
-                        someNull = true;
+                        return null;
+                    }
+                    if (x === undefined) {
+                        someUndefined = true;
                     }
                     if (result === null) {
                         result = x;
@@ -2215,8 +2200,8 @@
                         result = result & x;
                     }
                 }
-                if (someNull) {
-                    return null;
+                if (someUndefined) {
+                    return undefined;
                 }
                 return result;
             };
@@ -2267,16 +2252,16 @@
 
             f = function(r, context) {
                 var result = null,
-                    someNull = false,
+                    someUndefined = false,
                     i;
                 
                 for (i = 0; i < optimizedArgs.length; i += 1) {
                     var x = calc(optimizedArgs[i], r, context);
-                    if (x === undefined) {
-                        return undefined;
-                    }
                     if (x === null) {
-                        someNull = true;
+                        return null;
+                    }
+                    if (x === undefined) {
+                        someUndefined = true;
                     }
                     if (result === null) {
                         result = x;
@@ -2284,8 +2269,8 @@
                         result = result | x;
                     }
                 }
-                if (someNull) {
-                    return null;
+                if (someUndefined) {
+                    return undefined;
                 }
                 return result;
             };
@@ -2336,16 +2321,16 @@
 
             f = function(r, context) {
                 var result = null,
-                    someNull = false,
+                    someUndefined = false,
                     i;
                 
                 for (i = 0; i < optimizedArgs.length; i += 1) {
                     var x = calc(optimizedArgs[i], r, context);
-                    if (x === undefined) {
-                        return undefined;
-                    }
                     if (x === null) {
-                        someNull = true;
+                        return null;
+                    }
+                    if (x === undefined) {
+                        someUndefined = true;
                     }
                     if (result === null) {
                         result = x;
@@ -2353,8 +2338,8 @@
                         result = result ^ x;
                     }
                 }
-                if (someNull) {
-                    return null;
+                if (someUndefined) {
+                    return undefined;
                 }
                 return result;
             };
@@ -2375,6 +2360,47 @@
             };
             return toSqlFun(f, toSql);
         }
+
+        
+        /**
+         * returns a functions that does the modulus
+         * @method modulus
+         * @param {sqlFun|string|object} expr1
+         * @param {sqlFun|object} expr2
+         * @return {sqlFun}
+         */
+        function modulus(expr1, expr2) {
+            var expr = autofield(expr1),
+                f;
+            f = function(r, context) {
+                if (r === undefined) {
+                    return undefined;
+                }
+                var x = calc(expr, r, context),
+                    y = calc(expr2, r, context);
+
+                if (x === null || y === null) {
+                    return null;
+                }
+                if (x === undefined || y === undefined) {
+                    return undefined;
+                }
+                return x % y;
+            };
+            f.toString = function() {
+                return 'modulus(' + expr.toString() + ',' + expr2.toString() + ')';
+            };
+
+            f.myName = 'modulus';
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                //noinspection JSUnresolvedFunction
+                return formatter.modulus(expr, expr2, context);
+            };
+            return toSqlFun(f, toSql);
+        }
+        
   
         var dataQuery = {
             context: context,
@@ -2429,6 +2455,7 @@
             bitwiseAnd : bitwiseAnd,
             bitwiseOr: bitwiseOr,
             bitwiseXor : bitwiseXor,
+            modulus : modulus,
             myLoDash: _ //for testing purposes
         };
 
