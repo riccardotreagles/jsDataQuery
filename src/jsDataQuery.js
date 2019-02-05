@@ -2400,6 +2400,79 @@
             };
             return toSqlFun(f, toSql);
         }
+		
+		/**
+         * returns an array list from the parameters if all the parameters are legal.
+         * Oterwise it returns undefined or null.
+         * @method doPar
+         * @param {sqlFun[]|object[]} values
+         * @return {sqlFun}
+         */
+        function doPar(values) {
+            var a = values,
+                alwaysFalse = false,
+                f;
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+            var optimizedArgs = _.filter(a, function(el) {
+                if (el === undefined) {
+                    return false;
+                }
+                if (el === null) {
+                    return false;
+                }
+                if (el === true || el.isTrue) {
+                    return false;
+                }
+                if (el === false || el.isFalse) {
+                    alwaysFalse = true;
+                }
+                return true;
+            });
+
+            if (alwaysFalse) {
+                return constant(false);
+            }
+
+            if (optimizedArgs.length === 0) {
+                return constant(true);
+            }
+
+            f = function(r, context) {
+                var i,
+                    someUndefined = false,
+                    someNull = false;
+                for (i = 0; i < optimizedArgs.length; i += 1) {
+                    var x = calc(optimizedArgs[i], r, context);
+                    if (x === false) {
+                        return false;
+                    }
+                    if (x === null) {
+                        someNull = true;
+                    }
+                    if (x === undefined) {
+                        someUndefined = true;
+                    }
+                }
+                if (someUndefined) {
+                    return undefined;
+                }
+                if (someNull) {
+                    return null;
+                }
+                return true;
+            };
+            f.myName = 'doPar';
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.doPar(_.map(a, function(v) {
+                    return formatter.toSql(v, context);
+                }));
+            };
+            return toSqlFun(f, toSql);
+        }
         
   
         var dataQuery = {
@@ -2456,6 +2529,7 @@
             bitwiseOr: bitwiseOr,
             bitwiseXor : bitwiseXor,
             modulus : modulus,
+			doPar : doPar,
             myLoDash: _ //for testing purposes
         };
 
