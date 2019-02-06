@@ -563,7 +563,7 @@
                     }
                     var v1 = calc(expr, r, context),
                         v2 = calc(nbit, r, context);
-                    
+
                     if (x === null || y === null) {
                         return null;
                     }
@@ -708,7 +708,7 @@
                     }
                     if(!_.isString(v1) || !_.isString(v2)) {
                         return false;
-                    } 
+                    }
 
                     likeExpr = myRegExpEscape(v2);
                     return (new RegExp(likeExpr.replace(new RegExp('%', 'g'), ".*").replace(new RegExp('_', 'g'), ".")).exec(v1) !== null);
@@ -838,7 +838,7 @@
         function isNotIn(expr1, list) {
             return not(isIn(expr1, list));
         }
-       
+
         function toString(o) {
             if (o === undefined) {
                 return 'undefined';
@@ -1177,7 +1177,7 @@
             };
             return toSqlFun(f, toSql);
         }
-      
+
         /**
          * return the first object not null in the  array parameter
          * @param {sqlFun[]|object[]} arr
@@ -1581,7 +1581,7 @@
 
             return toSqlFun(f, toSql);
         }
-        
+
 
         /**
          * Compares a set of keys of an object with an array of values or with fields of another object
@@ -1700,14 +1700,14 @@
         }
 
         /**
-             * Compares a set of keys of an object with an array of values or with fields of another object
-             * @method mcmpEq
-             * @param {object} example
-             * @param {string} [alias]
-             * @return {sqlFun} f(r) = true if  for each non empty field of r:
-             *  case field is null :    field is null
-             *  otherwise: r[field] = example[field]
-             */
+         * Compares a set of keys of an object with an array of values or with fields of another object
+         * @method mcmpEq
+         * @param {object} example
+         * @param {string} [alias]
+         * @return {sqlFun} f(r) = true if  for each non empty field of r:
+         *  case field is null :    field is null
+         *  otherwise: r[field] = example[field]
+         */
         function mcmpEq(example, alias) {
             if (example === null || example === undefined) {
                 return constant(true);
@@ -1745,7 +1745,7 @@
                 }
                 var x = calc(expr, r, context),
                     y = calc(expr2, r, context);
-                
+
                 if (x === null || y === null) {
                     return null;
                 }
@@ -1807,7 +1807,7 @@
             return toSqlFun(f, toSql);
         }
 
-        
+
         /**
          * returns a functions that evaluates the sum of a list or array of values given when it is CREATED
          * @method add
@@ -1855,7 +1855,7 @@
             };
             return toSqlFun(f, toSql);
         }
- 
+
         /**
          * returns a functions that evaluates the concatenation of a list or array of strings given when it is CREATED
          * @method concat
@@ -1982,7 +1982,7 @@
                         prod = x;
                     } else {
                         prod *= x;
-                    }               
+                    }
                 }
                 if (someUndefined) {
                     return undefined;
@@ -2005,11 +2005,11 @@
             };
             return toSqlFun(f, toSql);
         }
- 
+
         function arrayToString(arr) {
             return '[' + _.map(arr, function(value) {
-                return toString(value);
-            }).join(',') + ']';
+                    return toString(value);
+                }).join(',') + ']';
         }
 
         /**
@@ -2090,7 +2090,7 @@
                 var outputList = [],
                     someNull = false,
                     i;
-                
+
                 for (i = 0; i < a.length; i += 1) {
                     var x = calc(a[i], r, context);
 
@@ -2100,7 +2100,7 @@
                     if (x === null) {
                         someNull = true;
                     }
-                    outputList.push(x); 
+                    outputList.push(x);
                 }
                 if (someNull) {
                     return null;
@@ -2123,7 +2123,7 @@
             };
             return toSqlFun(f, toSql);
         }
-   
+
         /**
          * @method bitwiseNot
          * @param {sqlFun|string|object} }  expression note: this is autofield-ed, so if you can use a field name for it
@@ -2162,7 +2162,7 @@
         function bitwiseAnd(arr) {
             var a = arr,
                 f;
-            
+
             if (!_.isArray(a)) {
                 a = [].slice.call(arguments);
             }
@@ -2185,7 +2185,7 @@
                 var result = null,
                     someUndefined = false,
                     i;
-                
+
                 for (i = 0; i < optimizedArgs.length; i += 1) {
                     var x = calc(optimizedArgs[i], r, context);
                     if (x === null) {
@@ -2231,7 +2231,7 @@
         function bitwiseOr(arr) {
             var a = arr,
                 f;
-            
+
             if (!_.isArray(a)) {
                 a = [].slice.call(arguments);
             }
@@ -2254,7 +2254,7 @@
                 var result = null,
                     someUndefined = false,
                     i;
-                
+
                 for (i = 0; i < optimizedArgs.length; i += 1) {
                     var x = calc(optimizedArgs[i], r, context);
                     if (x === null) {
@@ -2300,7 +2300,7 @@
         function bitwiseXor(arr) {
             var a = arr,
                 f;
-            
+
             if (!_.isArray(a)) {
                 a = [].slice.call(arguments);
             }
@@ -2323,7 +2323,7 @@
                 var result = null,
                     someUndefined = false,
                     i;
-                
+
                 for (i = 0; i < optimizedArgs.length; i += 1) {
                     var x = calc(optimizedArgs[i], r, context);
                     if (x === null) {
@@ -2361,7 +2361,7 @@
             return toSqlFun(f, toSql);
         }
 
-        
+
         /**
          * returns a functions that does the modulus
          * @method modulus
@@ -2400,16 +2400,15 @@
             };
             return toSqlFun(f, toSql);
         }
-		
-		/**
-         * returns an array list from the parameters if all the parameters are legal.
-         * Oterwise it returns undefined or null.
+
+        /**
+         * returns the result of internal expression
          * @method doPar
-         * @param {sqlFun[]|object[]} values
+         * @param {sqlFun|string|object} expr
          * @return {sqlFun}
          */
-        function doPar(values) {
-            var a = values,
+        function doPar(expr) {
+            var a = expr,
                 alwaysFalse = false,
                 f;
             if (!_.isArray(a)) {
@@ -2440,41 +2439,19 @@
             }
 
             f = function(r, context) {
-                var i,
-                    someUndefined = false,
-                    someNull = false;
-                for (i = 0; i < optimizedArgs.length; i += 1) {
-                    var x = calc(optimizedArgs[i], r, context);
-                    if (x === false) {
-                        return false;
-                    }
-                    if (x === null) {
-                        someNull = true;
-                    }
-                    if (x === undefined) {
-                        someUndefined = true;
-                    }
-                }
-                if (someUndefined) {
-                    return undefined;
-                }
-                if (someNull) {
-                    return null;
-                }
-                return true;
+                return calc(optimizedArgs[0], r, context);
             };
+
             f.myName = 'doPar';
             f.myArguments = arguments;
 
             var toSql = function(formatter, context) {
-                return formatter.doPar(_.map(a, function(v) {
-                    return formatter.toSql(v, context);
-                }));
+                return formatter.doPar(a, context);
             };
             return toSqlFun(f, toSql);
         }
-        
-  
+
+
         var dataQuery = {
             context: context,
             calc: calc,
@@ -2529,7 +2506,7 @@
             bitwiseOr: bitwiseOr,
             bitwiseXor : bitwiseXor,
             modulus : modulus,
-			doPar : doPar,
+            doPar : doPar,
             myLoDash: _ //for testing purposes
         };
 
