@@ -2400,6 +2400,56 @@
             };
             return toSqlFun(f, toSql);
         }
+
+        /**
+         * returns the result of internal expression
+         * @method doPar
+         * @param {sqlFun|string|object} expr
+         * @return {sqlFun}
+         */
+        function doPar(expr) {
+            var a = expr,
+                alwaysFalse = false,
+                f;
+            if (!_.isArray(a)) {
+                a = [].slice.call(arguments);
+            }
+            var optimizedArgs = _.filter(a, function(el) {
+                if (el === undefined) {
+                    return false;
+                }
+                if (el === null) {
+                    return false;
+                }
+                if (el === true || el.isTrue) {
+                    return false;
+                }
+                if (el === false || el.isFalse) {
+                    alwaysFalse = true;
+                }
+                return true;
+            });
+
+            if (alwaysFalse) {
+                return constant(false);
+            }
+
+            if (optimizedArgs.length === 0) {
+                return constant(true);
+            }
+
+            f = function(r, context) {
+                return calc(optimizedArgs[0], r, context);
+            };
+
+            f.myName = 'doPar';
+            f.myArguments = arguments;
+
+            var toSql = function(formatter, context) {
+                return formatter.doPar(a, context);
+            };
+            return toSqlFun(f, toSql);
+        }
         
   
         var dataQuery = {
@@ -2456,6 +2506,7 @@
             bitwiseOr: bitwiseOr,
             bitwiseXor : bitwiseXor,
             modulus : modulus,
+            doPar:doPar,
             myLoDash: _ //for testing purposes
         };
 
